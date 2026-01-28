@@ -25,9 +25,6 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || process.env.FIREBASE_APP_ID,
 };
 
-
-
-
 // Guard initialization (avoid multiple inits during HMR)
 // Ensure the Firebase *client* is only initialized in the browser
 // (prevents prerender/SSR attempts to initialize the client and
@@ -46,5 +43,7 @@ if (typeof window !== "undefined") {
 }
 
 export const auth = typeof window !== "undefined" && app ? getAuth(app) : null;
-export const db = typeof window !== "undefined" && app ? getFirestore(app) : null;
-export const functions = typeof window !== "undefined" && app ? getFunctions(app) : null;
+export const db =
+  typeof window !== "undefined" && app ? getFirestore(app) : null;
+export const functions =
+  typeof window !== "undefined" && app ? getFunctions(app) : null;

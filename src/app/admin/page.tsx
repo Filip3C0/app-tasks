@@ -35,7 +35,6 @@ type Building = {
   name: string;
 };
 
-/* ================= PAGE ================= */
 
 export default function AdminPage() {
   const [tickets, setTickets] = useState<Ticket[]>([]);

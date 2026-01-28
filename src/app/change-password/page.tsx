@@ -39,8 +39,8 @@ export default function TrocarSenhaPage() {
       return;
     }
 
-    const user = auth.currentUser;
-    if (!user) {
+    const user = auth?.currentUser;
+    if (!user || !auth) {
       toast({
         title: "Sessão inválida. Faça login novamente.",
         variant: "destructive",
@@ -61,7 +61,7 @@ export default function TrocarSenhaPage() {
       });
 
       // 🚪 Encerra sessão
-      await auth.signOut();
+      if (auth) await auth.signOut();
 
       toast({
         title: "Senha alterada com sucesso! Faça login novamente.",

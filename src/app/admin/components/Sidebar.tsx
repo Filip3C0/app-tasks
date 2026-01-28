@@ -12,6 +12,11 @@ export function Sidebar() {
   const router = useRouter();
 
   async function handleLogout() {
+    if (!auth) {
+      router.push("/login");
+      return;
+    }
+
     await signOut(auth);
     router.push("/login");
   }
