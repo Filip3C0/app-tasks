@@ -43,8 +43,17 @@ export function ConfirmDeleteModal({
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Erro ao excluir usuário");
+      let data: any = {};
+      try {
+        data = await response.json();
+      } catch (err) {
+        data = {};
+      }
+
+      if (!response.ok || data?.error) {
+        const msg =
+          data?.error || `Erro ao excluir usuário (HTTP ${response.status})`;
+        throw new Error(msg);
       }
 
       onOpenChange(false);

@@ -226,8 +226,36 @@ export async function DELETE(req: Request) {
     // ==========================
     // 🔥 EXCLUIR USUÁRIO
     // ==========================
-    await adminAuth.deleteUser(userId);
-    await adminDb.collection("users").doc(userId).delete();
+    // Tenta deletar no Auth; se não existir, loga e segue para Firestore
+    try {
+      await adminAuth.deleteUser(userId);
+      console.log("[DELETE /api/users] ✓ Auth user deletado");
+    } catch (authErr: any) {
+      if (authErr?.code === "auth/user-not-found") {
+        console.warn("[DELETE /api/users] usuário não encontrado no Auth");
+      } else {
+        console.error("[DELETE /api/users] Erro ao deletar no Auth", authErr);
+        return NextResponse.json(
+          { error: authErr?.message || "Erro ao deletar usuário no Auth" },
+          { status: 500 },
+        );
+      }
+    }
+
+    // Deleta no Firestore (idempotente)
+    try {
+      await adminDb.collection("users").doc(userId).delete();
+      console.log("[DELETE /api/users] ✓ Documento do Firestore deletado");
+    } catch (fsErr: any) {
+      console.error(
+        "[DELETE /api/users] Erro ao deletar documento do Firestore",
+        fsErr,
+      );
+      return NextResponse.json(
+        { error: fsErr?.message || "Erro ao deletar usuário no Firestore" },
+        { status: 500 },
+      );
+    }
 
     console.log("[DELETE /api/users] ✓ Usuário deletado com sucesso");
     return NextResponse.json({ success: true });
