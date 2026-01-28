@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { auth } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 import { db } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { LoadingScreen } from "@/components/layout/loading-screen";
@@ -19,11 +20,14 @@ export function AuthGuard({ allowedRoles, children }: AuthGuardProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function checkAccess() {
-      const user = auth?.currentUser;
+    if (!auth) {
+      router.replace("/login");
+      return;
+    }
 
+    const unsubscribe = onAuthStateChanged(auth as any, async (user) => {
       if (!user || !db) {
-        router.push("/login");
+        router.replace("/login");
         return;
       }
 
@@ -31,20 +35,19 @@ export function AuthGuard({ allowedRoles, children }: AuthGuardProps) {
       const data = snap.data();
 
       if (!data || !allowedRoles.includes(data.role)) {
-        router.push("/login");
+        router.replace("/login");
         return;
       }
 
-      // If user is flagged to change password on first login, redirect them
       if (data.firstLogin) {
-        router.push("/change-password");
+        router.replace("/change-password");
         return;
       }
 
       setLoading(false);
-    }
+    });
 
-    checkAccess();
+    return () => unsubscribe();
   }, [allowedRoles, router]);
 
   if (loading) return <LoadingScreen />;
