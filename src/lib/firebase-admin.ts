@@ -41,12 +41,20 @@ if (!admin.apps.length) {
         privateKey.substring(0, 50),
       );
 
+      // Provide the service account fields using the snake_case keys
+      // that the Firebase Admin SDK expects (e.g. "project_id"). Also
+      // include camelCase variants for extra robustness.
+      const serviceAccount: any = {
+        project_id: process.env.FIREBASE_PROJECT_ID,
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        client_email: process.env.FIREBASE_CLIENT_EMAIL,
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        private_key: privateKey,
+        privateKey: privateKey,
+      };
+
       admin.initializeApp({
-        credential: admin.credential.cert({
-          projectId: process.env.FIREBASE_PROJECT_ID,
-          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-          privateKey: privateKey,
-        }),
+        credential: admin.credential.cert(serviceAccount),
         databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com`,
       });
     }
