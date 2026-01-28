@@ -25,16 +25,26 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || process.env.FIREBASE_APP_ID,
 };
 
-if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
-  // eslint-disable-next-line no-console
-  console.warn(
-    "[firebase] Firebase config missing. Set NEXT_PUBLIC_FIREBASE_* (client) or FIREBASE_* (server) in your .env",
-  );
-}
+
+
 
 // Guard initialization (avoid multiple inits during HMR)
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+// Ensure the Firebase *client* is only initialized in the browser
+// (prevents prerender/SSR attempts to initialize the client and
+// therefore avoids needing NEXT_PUBLIC_* during build-time).
+let app: any = null;
+if (typeof window !== "undefined") {
+  try {
+    app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+  } catch (e) {
+    // If initialization fails in the browser, log and continue with null
+    // so server-side code is not affected.
+    // eslint-disable-next-line no-console
+    console.error("[firebase] client initialization error:", e);
+    app = null;
+  }
+}
 
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const functions = getFunctions(app);
+export const auth = typeof window !== "undefined" && app ? getAuth(app) : null;
+export const db = typeof window !== "undefined" && app ? getFirestore(app) : null;
+export const functions = typeof window !== "undefined" && app ? getFunctions(app) : null;
