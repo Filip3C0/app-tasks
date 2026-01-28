@@ -15,53 +15,62 @@ if (!admin.apps.length) {
   console.log("[Firebase-Admin] Project ID:", process.env.FIREBASE_PROJECT_ID);
 
   try {
-    // Tentar usar arquivo serviceAccountKey.json primeiro
+    // Prefer environment variables in production (Vercel) to avoid
+    // relying on an on-disk `serviceAccountKey.json` file that may be
+    // absent or sanitized in the deployment environment.
+    const projectIdEnv = process.env.FIREBASE_PROJECT_ID;
+    const clientEmailEnv = process.env.FIREBASE_CLIENT_EMAIL;
+    let privateKeyEnv = process.env.FIREBASE_PRIVATE_KEY || "";
+
     const keyPath = path.join(process.cwd(), "serviceAccountKey.json");
 
-    if (fs.existsSync(keyPath)) {
-      console.log("[Firebase-Admin] Usando serviceAccountKey.json");
-      const serviceAccount = JSON.parse(fs.readFileSync(keyPath, "utf-8"));
+    const useEnv = !!(projectIdEnv && clientEmailEnv && privateKeyEnv);
 
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount),
-        databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com`,
-      });
-    } else {
-      // Fallback para variáveis de ambiente
-      console.log("[Firebase-Admin] Usando variáveis de ambiente");
+    if (useEnv) {
+      console.log(
+        "[Firebase-Admin] Inicializando a partir de variáveis de ambiente",
+      );
 
-      const missing: string[] = [];
-      const projectId = process.env.FIREBASE_PROJECT_ID;
-      const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-      let privateKey = process.env.FIREBASE_PRIVATE_KEY || "";
-
-      if (!projectId) missing.push("FIREBASE_PROJECT_ID");
-      if (!clientEmail) missing.push("FIREBASE_CLIENT_EMAIL");
-      if (!privateKey) missing.push("FIREBASE_PRIVATE_KEY");
-
-      if (privateKey.includes("\\n")) {
-        privateKey = privateKey.replace(/\\n/g, "\n");
-      }
-
-      if (missing.length > 0) {
-        const msg = `Missing Firebase credentials: set the following env vars: ${missing.join(", ")}`;
-        console.error("[Firebase-Admin] " + msg);
-        throw new Error(msg);
+      if (privateKeyEnv.includes("\\n")) {
+        privateKeyEnv = privateKeyEnv.replace(/\\n/g, "\n");
       }
 
       const serviceAccount: any = {
-        project_id: projectId,
-        projectId: projectId,
-        client_email: clientEmail,
-        clientEmail: clientEmail,
-        private_key: privateKey,
-        privateKey: privateKey,
+        project_id: projectIdEnv,
+        projectId: projectIdEnv,
+        client_email: clientEmailEnv,
+        clientEmail: clientEmailEnv,
+        private_key: privateKeyEnv,
+        privateKey: privateKeyEnv,
       };
 
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
-        databaseURL: `https://${projectId}.firebaseio.com`,
+        databaseURL: `https://${projectIdEnv}.firebaseio.com`,
       });
+    } else if (fs.existsSync(keyPath)) {
+      console.log("[Firebase-Admin] Usando serviceAccountKey.json");
+      const serviceAccount = JSON.parse(fs.readFileSync(keyPath, "utf-8"));
+
+      if (!serviceAccount || typeof serviceAccount.project_id !== "string") {
+        const msg = "serviceAccountKey.json is missing 'project_id' (string)";
+        console.error("[Firebase-Admin] " + msg);
+        throw new Error(msg);
+      }
+
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+        databaseURL: `https://${serviceAccount.project_id}.firebaseio.com`,
+      });
+    } else {
+      const missing: string[] = [];
+      if (!projectIdEnv) missing.push("FIREBASE_PROJECT_ID");
+      if (!clientEmailEnv) missing.push("FIREBASE_CLIENT_EMAIL");
+      if (!privateKeyEnv) missing.push("FIREBASE_PRIVATE_KEY");
+
+      const msg = `Missing Firebase credentials and no serviceAccountKey.json found. Set env vars or add serviceAccountKey.json. Missing: ${missing.join(", ")}`;
+      console.error("[Firebase-Admin] " + msg);
+      throw new Error(msg);
     }
 
     console.log(
