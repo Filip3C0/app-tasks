@@ -56,7 +56,9 @@ export default function TrocarSenhaPage() {
       await updatePassword(user, password);
 
       // 🧾 Atualiza Firestore
-      await updateDoc(doc(db, "users", user.uid), {
+      if (!db) throw new Error("Firestore not initialized");
+
+      await updateDoc(doc(db as any, "users", user.uid), {
         firstLogin: false,
       });
 

@@ -12,10 +12,11 @@ export default function LoadingPage() {
 
   useEffect(() => {
     async function checkUser() {
-      const user = auth.currentUser;
+      const user = auth?.currentUser;
       if (!user) return;
+      if (!db) return;
 
-      const ref = doc(db, "users", user.uid);
+      const ref = doc(db as any, "users", user.uid);
       const snap = await getDoc(ref);
 
       const data = snap.data();

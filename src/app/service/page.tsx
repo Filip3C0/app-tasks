@@ -43,7 +43,9 @@ export default function ServicePage() {
 
   useEffect(() => {
     async function loadBuildings() {
-      const snap = await getDocs(collection(db, "buildings"));
+      if (!db) return;
+
+      const snap = await getDocs(collection(db as any, "buildings"));
       setBuildings(
         snap.docs.map((d) => ({
           id: d.id,
@@ -73,7 +75,7 @@ export default function ServicePage() {
     try {
       setLoading(true);
 
-      await addDoc(collection(db, "tickets"), {
+      await addDoc(collection(db as any, "tickets"), {
         code,
         requester,
         sector,

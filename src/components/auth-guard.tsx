@@ -20,14 +20,14 @@ export function AuthGuard({ allowedRoles, children }: AuthGuardProps) {
 
   useEffect(() => {
     async function checkAccess() {
-      const user = auth.currentUser;
+      const user = auth?.currentUser;
 
-      if (!user) {
+      if (!user || !db) {
         router.push("/login");
         return;
       }
 
-      const snap = await getDoc(doc(db, "users", user.uid));
+      const snap = await getDoc(doc(db as any, "users", user.uid));
       const data = snap.data();
 
       if (!data || !allowedRoles.includes(data.role)) {

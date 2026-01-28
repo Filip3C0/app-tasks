@@ -43,15 +43,15 @@ export default function FieldPage() {
   const [buildingId, setBuildingId] = useState<string | null>(null);
   const [loadingTicketId, setLoadingTicketId] = useState<string | null>(null);
 
-  const currentUser = auth.currentUser;
+  const currentUser = auth?.currentUser;
 
   /* ================= LOAD USER BUILDING ================= */
 
   useEffect(() => {
     async function loadUserBuilding() {
-      if (!currentUser) return;
+      if (!currentUser || !db) return;
 
-      const snap = await getDoc(doc(db, "users", currentUser.uid));
+      const snap = await getDoc(doc(db as any, "users", currentUser.uid));
 
       setBuildingId(snap.data()?.buildingId ?? null);
     }
@@ -64,8 +64,10 @@ export default function FieldPage() {
   useEffect(() => {
     if (!buildingId) return;
 
+    if (!db) return;
+
     const q = query(
-      collection(db, "tickets"),
+      collection(db as any, "tickets"),
       where("buildingId", "==", buildingId),
     );
 
@@ -90,7 +92,7 @@ export default function FieldPage() {
     try {
       setLoadingTicketId(ticket.id);
 
-      await updateDoc(doc(db, "tickets", ticket.id), {
+      await updateDoc(doc(db as any, "tickets", ticket.id), {
         status: "em_atendimento",
         assignedTo: {
           uid: currentUser.uid,
@@ -115,7 +117,7 @@ export default function FieldPage() {
     try {
       setLoadingTicketId(ticket.id);
 
-      await updateDoc(doc(db, "tickets", ticket.id), {
+      await updateDoc(doc(db as any, "tickets", ticket.id), {
         status: "finalizado",
         solvedAt: Timestamp.now(),
       });

@@ -53,7 +53,9 @@ export default function UsersPage() {
   async function loadUsers() {
     setLoading(true);
     try {
-      const snap = await getDocs(collection(db, "users"));
+      if (!db) return;
+
+      const snap = await getDocs(collection(db as any, "users"));
       const data = snap.docs.map((doc) => ({
         id: doc.id,
         ...(doc.data() as Omit<User, "id">),

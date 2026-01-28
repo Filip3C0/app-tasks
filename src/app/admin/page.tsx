@@ -35,7 +35,6 @@ type Building = {
   name: string;
 };
 
-
 export default function AdminPage() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [buildings, setBuildings] = useState<Building[]>([]);
@@ -47,7 +46,9 @@ export default function AdminPage() {
   /* ================= REALTIME TICKETS ================= */
 
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, "tickets"), (snap) => {
+    if (!db) return;
+
+    const unsub = onSnapshot(collection(db as any, "tickets"), (snap) => {
       setTickets(
         snap.docs.map((d) => ({
           id: d.id,
@@ -63,7 +64,9 @@ export default function AdminPage() {
   /* ================= REALTIME BUILDINGS ================= */
 
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, "buildings"), (snap) => {
+    if (!db) return;
+
+    const unsub = onSnapshot(collection(db as any, "buildings"), (snap) => {
       setBuildings(
         snap.docs.map((d) => ({
           id: d.id,
@@ -121,10 +124,10 @@ export default function AdminPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <h1 className="text-4xl font-bold bg-linear-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-                     Dashboard Geral
+                    Dashboard Geral
                   </h1>
                   <p className="text-base text-indigo-300/70 mt-2">
-                    Visão geral dos chamados 
+                    Visão geral dos chamados
                   </p>
                 </div>
               </div>

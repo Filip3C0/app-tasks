@@ -43,7 +43,9 @@ export default function CreateUserPage() {
   /* pega os prédios do firestore  */
   useEffect(() => {
     async function loadBuildings() {
-      const snap = await getDocs(collection(db, "buildings"));
+      if (!db) return;
+
+      const snap = await getDocs(collection(db as any, "buildings"));
 
       const data = snap.docs.map((doc) => ({
         id: doc.id,
@@ -74,7 +76,9 @@ export default function CreateUserPage() {
     try {
       setLoading(true);
 
-      const createUser = httpsCallable(functions, "createUser");
+      if (!functions) throw new Error("Firebase functions not initialized");
+
+      const createUser = httpsCallable(functions as any, "createUser");
 
       await createUser({
         name,

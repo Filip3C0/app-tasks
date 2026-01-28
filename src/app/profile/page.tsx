@@ -24,12 +24,12 @@ export default function PerfilPage() {
 
   useEffect(() => {
     async function loadUser() {
-      const user = auth.currentUser;
-      if (!user) return;
+      const user = auth?.currentUser;
+      if (!user || !db) return;
 
       setEmail(user.email || "");
 
-      const ref = doc(db, "users", user.uid);
+      const ref = doc(db as any, "users", user.uid);
       const snap = await getDoc(ref);
 
       if (snap.exists()) {
@@ -43,13 +43,13 @@ export default function PerfilPage() {
   }, []);
 
   async function handleSave() {
-    const user = auth.currentUser;
-    if (!user) return;
+    const user = auth?.currentUser;
+    if (!user || !db) return;
 
     try {
       setLoading(true);
 
-      await updateDoc(doc(db, "users", user.uid), {
+      await updateDoc(doc(db as any, "users", user.uid), {
         name,
         photoURL,
       });

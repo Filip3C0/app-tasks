@@ -22,7 +22,9 @@ export default function LoginPage() {
   async function handleLogin() {
     try {
       setLoading(true);
-      await signInWithEmailAndPassword(auth, email, password);
+      if (!auth) throw new Error("Firebase auth not initialized");
+
+      await signInWithEmailAndPassword(auth as any, email, password);
       router.push("/loading");
     } catch (error) {
       toast({ title: "Email ou senha inválidos", variant: "destructive" });
