@@ -6,7 +6,7 @@ import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 
 import AppLayout from "@/components/layout/AppLayout";
-import { Sidebar } from "../admin/components/Sidebar";
+import { Sidebar } from "../components/Sidebar";
 import MainContent from "@/components/layout/MainContent";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

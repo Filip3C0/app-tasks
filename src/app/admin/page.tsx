@@ -23,6 +23,11 @@ type Ticket = {
   id: string;
   code: string;
   buildingId: string;
+  requester: {
+    name: string;
+    email?: string;
+    phone?: string;
+  };
   status: TicketStatus;
   assignedTo?: {
     uid: string;
@@ -34,6 +39,7 @@ type Building = {
   id: string;
   name: string;
 };
+
 
 export default function AdminPage() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
@@ -91,6 +97,7 @@ export default function AdminPage() {
     });
   }, [tickets, building, technician]);
 
+ 
   /* ================= KPIs ================= */
 
   const open = filteredTickets.filter((t) => t.status === "aberto").length;
@@ -103,13 +110,17 @@ export default function AdminPage() {
 
   const hasData = open + inProgress + done > 0;
 
+
+
   /* ================= UI ================= */
 
   return (
     <AuthGuard allowedRoles={["admin"]}>
       <div className="flex min-h-screen bg-linear-to-br from-slate-900 via-indigo-900 to-slate-900">
+        {/* ================= Sidebar Page ================= */}
         <Sidebar />
-
+        {/* ================= Main Content ================= */}
+        {/* REPORT MODAL */}
         <ReportModal
           open={reportModalOpen}
           onClose={() => setReportModalOpen(false)}
@@ -153,6 +164,7 @@ export default function AdminPage() {
                   {/* BUILDING FILTER */}
                   <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-40">
                     <div className="space-y-6">
+                      {/*Filter By Building*/}
                       <div>
                         <h2 className="font-semibold text-indigo-300 text-lg">
                           Filtrar por Prédio
@@ -241,8 +253,8 @@ export default function AdminPage() {
                   </div>
 
                   {/* STATS ROW */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-40">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-40">
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm uppercase tracking-wide text-indigo-300/60 font-semibold">
@@ -262,7 +274,8 @@ export default function AdminPage() {
                         </div>
                       </div>
                     </div>
-
+                    
+                    {/*CONCLUSION, TIMER*/}
                     <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-40">
                       <div className="flex items-center justify-between">
                         <div>
@@ -295,6 +308,10 @@ export default function AdminPage() {
                       </div>
                     </div>
                   </div>
+                
+                  
+                   
+                  
                 </div>
               </div>
             </div>

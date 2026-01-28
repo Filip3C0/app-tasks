@@ -1,8 +1,8 @@
 "use client";
 
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LoadingScreen } from "@/components/layout/loading-screen";
@@ -11,27 +11,31 @@ export default function LoadingPage() {
   const router = useRouter();
 
   useEffect(() => {
-    async function checkUser() {
-      const user = auth?.currentUser;
-      if (!user) return;
-      if (!db) return;
+    if (!auth) {
+      router.replace("/login");
+      return;
+    }
 
-      const ref = doc(db as any, "users", user.uid);
-      const snap = await getDoc(ref);
-
-      const data = snap.data();
-
-      if (data?.firstLogin) {
-        router.push("/change-password");
+    const unsubscribe = onAuthStateChanged(auth as any, async (user) => {
+      if (!user || !db) {
+        router.replace("/login");
         return;
       }
 
-      if (data?.role === "admin") router.push("/admin");
-      if (data?.role === "service") router.push("/service");
-      if (data?.role === "field") router.push("/field");
-    }
+      const snap = await getDoc(doc(db as any, "users", user.uid));
+      const data = snap.data();
 
-    checkUser();
+      if (data?.firstLogin) {
+        router.replace("/change-password");
+        return;
+      }
+
+      if (data?.role === "admin") router.replace("/admin");
+      if (data?.role === "service") router.replace("/service");
+      if (data?.role === "field") router.replace("/field");
+    });
+
+    return () => unsubscribe();
   }, [router]);
 
   return <LoadingScreen />;

@@ -27,7 +27,7 @@ type Props = {
 };
 
 export function TechnicianFilter({ value, onChange, tickets }: Props) {
-  // 🔍 Extrai técnicos únicos dos tickets
+ 
   const technicians: Technician[] = Array.from(
     new Map(
       tickets

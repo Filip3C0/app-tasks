@@ -38,7 +38,7 @@ export function Sidebar() {
             Home
           </Link>
           <Link
-            href="/profileAdmin"
+            href="/admin/profileAdmin"
             className="flex items-center gap-3 px-3 py-2 rounded-lg text-indigo-300/70 hover:text-indigo-300 hover:bg-indigo-600/20 transition border border-transparent hover:border-indigo-500/30"
           >
             <User size={18} />
@@ -51,6 +51,13 @@ export function Sidebar() {
           >
             <User size={18} />
             Usuários
+          </Link>
+           <Link
+            href="/admin/tickets"
+            className="flex items-center gap-3 px-3 py-2 rounded-lg text-indigo-300/70 hover:text-indigo-300 hover:bg-indigo-600/20 transition border border-transparent hover:border-indigo-500/30"
+          >
+            <ClipboardList size={18} />
+            Chamados
           </Link>
         </nav>
       </div>
