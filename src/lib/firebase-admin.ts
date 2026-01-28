@@ -30,32 +30,37 @@ if (!admin.apps.length) {
       // Fallback para variáveis de ambiente
       console.log("[Firebase-Admin] Usando variáveis de ambiente");
 
+      const missing: string[] = [];
+      const projectId = process.env.FIREBASE_PROJECT_ID;
+      const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
       let privateKey = process.env.FIREBASE_PRIVATE_KEY || "";
+
+      if (!projectId) missing.push("FIREBASE_PROJECT_ID");
+      if (!clientEmail) missing.push("FIREBASE_CLIENT_EMAIL");
+      if (!privateKey) missing.push("FIREBASE_PRIVATE_KEY");
+
       if (privateKey.includes("\\n")) {
         privateKey = privateKey.replace(/\\n/g, "\n");
       }
 
-      console.log("[Firebase-Admin] Private Key Length:", privateKey.length);
-      console.log(
-        "[Firebase-Admin] Private Key Start:",
-        privateKey.substring(0, 50),
-      );
+      if (missing.length > 0) {
+        const msg = `Missing Firebase credentials: set the following env vars: ${missing.join(", ")}`;
+        console.error("[Firebase-Admin] " + msg);
+        throw new Error(msg);
+      }
 
-      // Provide the service account fields using the snake_case keys
-      // that the Firebase Admin SDK expects (e.g. "project_id"). Also
-      // include camelCase variants for extra robustness.
       const serviceAccount: any = {
-        project_id: process.env.FIREBASE_PROJECT_ID,
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        client_email: process.env.FIREBASE_CLIENT_EMAIL,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        project_id: projectId,
+        projectId: projectId,
+        client_email: clientEmail,
+        clientEmail: clientEmail,
         private_key: privateKey,
         privateKey: privateKey,
       };
 
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
-        databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com`,
+        databaseURL: `https://${projectId}.firebaseio.com`,
       });
     }
 
