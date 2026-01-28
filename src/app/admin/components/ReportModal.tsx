@@ -168,10 +168,10 @@ export function ReportModal({
     doc.setFont("helvetica", "bold");
     doc.text(reportTitle, margin, 24);
 
-    // Subtitle (date + filter)
+    // Subtitle (date + filter) — darker for readability on white
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(230, 230, 255);
+    doc.setTextColor(55, 65, 81); // slate-700
     doc.text(`Data do Relatório: ${reportDate}`, margin, 44);
     // ensure second column doesn't overflow page width
     const secondColX = Math.min(margin + 110, pageWidth - margin - 60);
@@ -180,7 +180,7 @@ export function ReportModal({
     y = 54;
 
     // Summary header
-    const lightIndigo = hexToRgb("#4f46e5");
+    const lightIndigo = hexToRgb("#312e81"); // darker indigo for contrast
     doc.setTextColor(lightIndigo[0], lightIndigo[1], lightIndigo[2]);
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
@@ -206,7 +206,7 @@ export function ReportModal({
 
     doc.setFontSize(11);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(230, 230, 255);
+    doc.setTextColor(31, 41, 55); // slate-800 for high contrast
 
     summaryRows.forEach((row) => {
       const labelX = margin;
@@ -236,7 +236,7 @@ export function ReportModal({
 
     // Footer note
     y += 8;
-    const footerColor = hexToRgb("#4f46e5");
+    const footerColor = hexToRgb("#1f2937");
     doc.setTextColor(footerColor[0], footerColor[1], footerColor[2]);
     doc.setFontSize(9);
     doc.text("Relatório gerado pelo sistema — layout indigo", margin, y);
@@ -398,7 +398,7 @@ export function ReportModal({
             <Button
               onClick={onClose}
               variant="outline"
-              className="px-6 py-3 rounded-xl border-slate-700 text-slate-300 font-medium hover:bg-slate-800 transition text-base"
+              className="px-6 py-3 rounded-xl border-slate-700 text-slate-500 font-medium hover:bg-slate-800 transition text-base"
             >
               Cancelar
             </Button>
