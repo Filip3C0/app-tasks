@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
 import { adminAuth, adminDb } from "@/lib/firebase-admin";
-import {
-  updateFirestoreREST,
-  deleteFirestoreDocREST,
-} from "@/lib/firestore-rest";
+// Prefer admin SDK for reliability on Vercel
 
 export async function POST(req: Request) {
   try {
@@ -18,32 +15,12 @@ export async function POST(req: Request) {
     // 🔥 EXCLUIR USUÁRIO
     // ==========================
     if (action === "delete") {
-      console.log("[POST /api/users] Iniciando exclusão em background...");
+      console.log("[POST /api/users] Deletando via Admin SDK...");
 
-      // Iniciar exclusão em background (sem await)
-      (async () => {
-        try {
-          console.log("[POST /api/users] [BG] Deletando do Auth...");
-          await adminAuth.deleteUser(userId);
+      await adminAuth.deleteUser(userId);
+      await adminDb.collection("users").doc(userId).delete();
 
-          console.log(
-            "[POST /api/users] [BG] Deletando do Firestore via REST...",
-          );
-          await deleteFirestoreDocREST("users", userId);
-
-          console.log("[POST /api/users] [BG] ✓ Usuário deletado com sucesso");
-        } catch (bgError) {
-          console.error(
-            "[POST /api/users] [BG] Erro durante exclusão:",
-            bgError,
-          );
-        }
-      })();
-
-      // Retornar sucesso imediatamente
-      console.log(
-        "[POST /api/users] ✓ Requisição aceita (exclusão em background)",
-      );
+      console.log("[POST /api/users] ✓ Usuário deletado com sucesso");
       return NextResponse.json({ success: true });
     }
 
@@ -130,19 +107,10 @@ export async function PUT(req: Request) {
         console.log(
           "[PUT /api/users] Iniciando atualização de lastPasswordReset em background...",
         );
-        (async () => {
-          try {
-            await updateFirestoreREST("users", userId, {
-              lastPasswordReset: new Date(),
-            });
-            console.log("[PUT /api/users] [BG] ✓ lastPasswordReset atualizado");
-          } catch (err) {
-            console.error(
-              "[PUT /api/users] [BG] Erro ao atualizar lastPasswordReset:",
-              err,
-            );
-          }
-        })();
+        await adminDb.collection("users").doc(userId).update({
+          lastPasswordReset: new Date(),
+        });
+        console.log("[PUT /api/users] ✓ lastPasswordReset atualizado");
 
         return NextResponse.json({
           success: true,
@@ -163,43 +131,24 @@ export async function PUT(req: Request) {
       try {
         const user = await adminAuth.getUser(userId);
 
-        // Senha temporária fixa conforme solicitado
         const tempPassword = "123456";
-
-        // Atualiza a senha no Auth (Admin SDK)
         await adminAuth.updateUser(userId, { password: tempPassword });
 
-        // Marca no Firestore que o usuário precisa trocar a senha no primeiro login
         const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
-        (async () => {
-          try {
-            await updateFirestoreREST("users", userId, {
-              firstLogin: true,
-              tempPasswordSetAt: new Date().toISOString(),
-              tempPasswordExpiresAt: expiresAt.toISOString(),
-            });
-
-            console.log(
-              "[PUT /api/users] [BG] ✓ temp password flag atualizado no Firestore",
-            );
-          } catch (err) {
-            console.error(
-              "[PUT /api/users] [BG] Erro ao atualizar Firestore (temp password):",
-              err,
-            );
-          }
-        })();
+        await adminDb.collection("users").doc(userId).update({
+          firstLogin: true,
+          tempPasswordSetAt: new Date().toISOString(),
+          tempPasswordExpiresAt: expiresAt.toISOString(),
+        });
 
         console.log(
           "[PUT /api/users] Senha temporária definida para",
           user.email,
         );
 
-        // Cria um token temporário para recuperar a senha uma vez
         const { randomBytes } = await import("crypto");
         const token = randomBytes(32).toString("hex");
 
-        // Armazena a senha temporária em memória por curto período
         const { setTempPassword } = await import("@/lib/temp-store");
         setTempPassword(token, tempPassword, 2 * 60 * 1000); // 2 minutos
 
@@ -241,29 +190,12 @@ export async function PUT(req: Request) {
         buildingId,
       );
 
-      // NÃO AGUARDAR - Iniciar em background e retornar imediatamente
-      console.log("[PUT /api/users] Iniciando atualização em background...");
+      await adminDb.collection("users").doc(userId).update({
+        buildingId,
+        updatedAt: new Date(),
+      });
 
-      // Iniciar a atualização em background com API REST
-      (async () => {
-        try {
-          console.log("[PUT /api/users] [BG] Iniciando update via REST...");
-
-          await updateFirestoreREST("users", userId, {
-            buildingId,
-            updatedAt: new Date(),
-          });
-
-          console.log("[PUT /api/users] [BG] ✓ Update completado com sucesso");
-        } catch (bgError) {
-          console.error("[PUT /api/users] [BG] Erro durante update:", bgError);
-        }
-      })();
-
-      // Retornar sucesso imediatamente sem aguardar a atualização
-      console.log(
-        "[PUT /api/users] ✓ Requisição aceita (atualização em background)",
-      );
+      console.log("[PUT /api/users] ✓ Update completado com sucesso");
       return NextResponse.json({ success: true });
     }
 
@@ -294,32 +226,10 @@ export async function DELETE(req: Request) {
     // ==========================
     // 🔥 EXCLUIR USUÁRIO
     // ==========================
-    console.log("[DELETE /api/users] Iniciando exclusão em background...");
+    await adminAuth.deleteUser(userId);
+    await adminDb.collection("users").doc(userId).delete();
 
-    // Iniciar exclusão em background (sem await)
-    (async () => {
-      try {
-        console.log("[DELETE /api/users] [BG] Deletando do Auth...");
-        await adminAuth.deleteUser(userId);
-
-        console.log(
-          "[DELETE /api/users] [BG] Deletando do Firestore via REST...",
-        );
-        await deleteFirestoreDocREST("users", userId);
-
-        console.log("[DELETE /api/users] [BG] ✓ Usuário deletado com sucesso");
-      } catch (bgError) {
-        console.error(
-          "[DELETE /api/users] [BG] Erro durante exclusão:",
-          bgError,
-        );
-      }
-    })();
-
-    // Retornar sucesso imediatamente
-    console.log(
-      "[DELETE /api/users] ✓ Requisição aceita (exclusão em background)",
-    );
+    console.log("[DELETE /api/users] ✓ Usuário deletado com sucesso");
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("[DELETE /api/users] ❌ Erro:", error);
