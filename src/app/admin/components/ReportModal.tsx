@@ -180,7 +180,7 @@ export function ReportModal({
     y = 54;
 
     // Summary header
-    const lightIndigo = hexToRgb("#a5b4fc");
+    const lightIndigo = hexToRgb("#4f46e5");
     doc.setTextColor(lightIndigo[0], lightIndigo[1], lightIndigo[2]);
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
@@ -196,7 +196,7 @@ export function ReportModal({
       {
         label: "Total de Chamados",
         value: ticketList.length,
-        color: "#94a3ff",
+        color: "#4f46e5",
       },
       { label: "Abertos", value: abertos, color: "#fb7185" },
       { label: "Em Atendimento", value: emAtendimento, color: "#f59e0b" },
@@ -236,7 +236,7 @@ export function ReportModal({
 
     // Footer note
     y += 8;
-    const footerColor = hexToRgb("#9aa7ff");
+    const footerColor = hexToRgb("#4f46e5");
     doc.setTextColor(footerColor[0], footerColor[1], footerColor[2]);
     doc.setFontSize(9);
     doc.text("Relatório gerado pelo sistema — layout indigo", margin, y);
@@ -267,7 +267,7 @@ export function ReportModal({
               variant="ghost"
               size="icon"
               onClick={onClose}
-              className="text-indigo-200 hover:text-white"
+              className="text-indigo-500 hover:text-white"
               aria-label="Fechar"
             >
               <X className="w-5 h-5" />
@@ -278,7 +278,7 @@ export function ReportModal({
           <div className="px-8 py-6 space-y-6">
             {/* Tipo de Período */}
             <div>
-              <label className="block text-sm font-semibold text-indigo-200 mb-3">
+              <label className="block text-sm font-semibold text-indigo-500 mb-3">
                 Período do Relatório
               </label>
               <div className="grid grid-cols-3 gap-3">
@@ -289,7 +289,7 @@ export function ReportModal({
                     className={`px-6 py-3 rounded-xl font-medium text-sm transition ${
                       reportType === tipo
                         ? "bg-indigo-600 text-white shadow-md"
-                        : "bg-slate-800 text-indigo-200 hover:bg-slate-700"
+                        : "bg-slate-800 text-indigo-500 hover:bg-slate-700"
                     }`}
                   >
                     {tipo === "dia"
@@ -304,7 +304,7 @@ export function ReportModal({
 
             {/* Data */}
             <div>
-              <label className="block text-sm font-semibold text-indigo-200 mb-3">
+              <label className="block text-sm font-semibold text-indigo-500 mb-3">
                 Selecione a Data
               </label>
               <Input
@@ -323,7 +323,7 @@ export function ReportModal({
 
             {/* Filtro */}
             <div>
-              <label className="block text-sm font-semibold text-indigo-200 mb-3">
+              <label className="block text-sm font-semibold text-indigo-500 mb-3">
                 Filtrar Por
               </label>
               <div className="grid grid-cols-3 gap-3 mb-4">
@@ -338,7 +338,7 @@ export function ReportModal({
                     className={`px-6 py-3 rounded-xl font-medium text-sm transition ${
                       filterType === tipo
                         ? "bg-indigo-600 text-white shadow-md"
-                        : "bg-slate-800 text-indigo-200 hover:bg-slate-700"
+                        : "bg-slate-800 text-indigo-500 hover:bg-slate-700"
                     }`}
                   >
                     {tipo === "todos"
