@@ -102,7 +102,7 @@ export default function UsersPage() {
   /* ================= UI ================= */
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900">
+    <div className="flex min-h-screen bg-linear-to-br from-slate-900 via-indigo-900 to-slate-900">
       <Sidebar />
 
       <main className="flex-1 flex flex-col">
@@ -111,7 +111,7 @@ export default function UsersPage() {
           <div className="px-10 py-8">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                <h1 className="text-4xl font-bold bg-linear-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
                   Gerenciar Usuários
                 </h1>
                 <p className="text-base text-indigo-300/70 mt-2">
@@ -121,7 +121,7 @@ export default function UsersPage() {
               <div className="flex gap-4">
                 <Button
                   onClick={() => router.push("/admin/users/create")}
-                  className="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white text-base font-medium shadow-lg hover:from-indigo-500 hover:to-indigo-600"
+                  className="bg-linear-to-r from-indigo-600 to-indigo-700 text-white text-base font-medium shadow-lg hover:from-indigo-500 hover:to-indigo-600"
                 >
                   + Novo Usuário
                 </Button>
@@ -174,7 +174,7 @@ export default function UsersPage() {
               </div>
 
               <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition flex items-end">
-                <Button className="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-medium hover:from-indigo-500 hover:to-indigo-600 transition text-base shadow-lg">
+                <Button className="w-full bg-linear-to-r from-indigo-600 to-indigo-700 text-white font-medium hover:from-indigo-500 hover:to-indigo-600 transition text-base shadow-lg">
                   Limpar Filtros
                 </Button>
               </div>
@@ -289,7 +289,7 @@ export default function UsersPage() {
                     size="sm"
                     disabled={page === 1}
                     onClick={() => setPage((p) => p - 1)}
-                    className="border-indigo-500/30 text-indigo-300 hover:bg-indigo-600/20 hover:border-indigo-400/50"
+                    className="border-indigo-500/30 text-indigo-900 hover:bg-indigo-300 hover:border-indigo-400/50"
                   >
                     ← Anterior
                   </Button>
@@ -303,7 +303,7 @@ export default function UsersPage() {
                     size="sm"
                     disabled={page === totalPages}
                     onClick={() => setPage((p) => p + 1)}
-                    className="border-indigo-500/30 text-indigo-300 hover:bg-indigo-600/20 hover:border-indigo-400/50"
+                    className="border-indigo-500/30 text-indigo-900 hover:bg-indigo-300 hover:border-indigo-400/50"
                   >
                     Próxima →
                   </Button>

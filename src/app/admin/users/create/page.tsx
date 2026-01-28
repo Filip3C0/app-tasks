@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
+import { toast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -58,12 +59,15 @@ export default function CreateUserPage() {
 
   async function handleCreateUser() {
     if (!name || !email || !role) {
-      alert("Preencha todos os campos obrigatórios");
+      toast({
+        title: "Preencha todos os campos obrigatórios",
+        variant: "warning",
+      });
       return;
     }
 
     if (role === "field" && !buildingId) {
-      alert("Selecione o prédio do técnico");
+      toast({ title: "Selecione o prédio do técnico", variant: "warning" });
       return;
     }
 
@@ -79,18 +83,21 @@ export default function CreateUserPage() {
         buildingId: role === "field" ? buildingId : null,
       });
       console.log(createUser);
-      alert("Usuário criado com sucesso!");
+      toast({ title: "Usuário criado com sucesso!", variant: "success" });
       router.push("/admin");
     } catch (err: any) {
       console.error(err);
-      alert(err?.message || "Erro ao criar usuário");
+      toast({
+        title: err?.message || "Erro ao criar usuário",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-slate-900 via-indigo-900 to-slate-900 px-4">
       <Card className="w-full max-w-md rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm shadow-lg">
         <CardHeader>
           <div className="relative w-full px-4 py-6">
@@ -107,7 +114,7 @@ export default function CreateUserPage() {
 
             <div className="flex flex-col items-center justify-center pt-8">
               <h1 className="text-2xl sm:text-3xl font-bold text-center leading-tight">
-                <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                <span className="bg-linear-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
                   Criar usuário
                 </span>
               </h1>
@@ -190,7 +197,7 @@ export default function CreateUserPage() {
           <Button
             onClick={handleCreateUser}
             disabled={loading}
-            className="w-full px-6 py-2 rounded-lg bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-medium hover:from-indigo-500 hover:to-indigo-600 transition shadow-lg"
+            className="w-full px-6 py-2 rounded-lg bg-linear-to-r from-indigo-600 to-indigo-700 text-white font-medium hover:from-indigo-500 hover:to-indigo-600 transition shadow-lg"
           >
             {loading ? "Criando..." : "Criar usuário"}
           </Button>

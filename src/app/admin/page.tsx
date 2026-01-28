@@ -12,7 +12,6 @@ import { TechnicianFilter } from "./components/TechnicianFilter";
 import { TicketsByBuildingChart } from "./components/TicketsByBuildingChart";
 import { ReportModal } from "./components/ReportModal";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Check, Clock, RefreshCw, BarChart } from "lucide-react";
 
@@ -106,7 +105,7 @@ export default function AdminPage() {
 
   return (
     <AuthGuard allowedRoles={["admin"]}>
-      <div className="flex min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900">
+      <div className="flex min-h-screen bg-linear-to-br from-slate-900 via-indigo-900 to-slate-900">
         <Sidebar />
 
         <ReportModal
@@ -122,11 +121,11 @@ export default function AdminPage() {
             <div className="px-10 py-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-                    Analytics Dashboard
+                  <h1 className="text-4xl font-bold bg-linear-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                     Dashboard Geral
                   </h1>
                   <p className="text-base text-indigo-300/70 mt-2">
-                    Visão geral dos chamados por status, prédio e técnico
+                    Visão geral dos chamados 
                   </p>
                 </div>
               </div>
@@ -150,7 +149,7 @@ export default function AdminPage() {
                 {/* LEFT COLUMN - FILTERS */}
                 <div className="lg:col-span-1 space-y-8">
                   {/* BUILDING FILTER */}
-                  <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-[160px]">
+                  <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-40">
                     <div className="space-y-6">
                       <div>
                         <h2 className="font-semibold text-indigo-300 text-lg">
@@ -190,7 +189,7 @@ export default function AdminPage() {
                   </div>
 
                   {/* ACTIONS CARD */}
-                  <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-[160px]">
+                  <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-40">
                     <div className="space-y-4">
                       <h3 className="font-semibold text-indigo-300 text-lg">
                         Ações Rápidas
@@ -198,7 +197,7 @@ export default function AdminPage() {
 
                       <Button
                         onClick={() => setReportModalOpen(true)}
-                        className="w-full px-6 py-4 rounded-lg bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-medium hover:from-indigo-500 hover:to-indigo-600 transition text-base shadow-lg"
+                        className="w-full px-6 py-4 rounded-lg bg-linear-to-r from-indigo-600 to-indigo-700 text-white font-medium hover:from-indigo-500 hover:to-indigo-600 transition text-base shadow-lg"
                       >
                         Gerar Relatório
                       </Button>
@@ -209,7 +208,7 @@ export default function AdminPage() {
                 {/* RIGHT COLUMN - CHART & STATS */}
                 <div className="lg:col-span-3 space-y-8">
                   {/* CHART */}
-                  <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-[300px]">
+                  <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-75">
                     <div className="space-y-8">
                       <div>
                         <h2 className="font-semibold text-indigo-300 text-xl">
@@ -241,7 +240,7 @@ export default function AdminPage() {
 
                   {/* STATS ROW */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-[160px]">
+                    <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-40">
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm uppercase tracking-wide text-indigo-300/60 font-semibold">
@@ -262,7 +261,7 @@ export default function AdminPage() {
                       </div>
                     </div>
 
-                    <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-[160px]">
+                    <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-40">
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm uppercase tracking-wide text-indigo-300/60 font-semibold">
@@ -278,7 +277,7 @@ export default function AdminPage() {
                       </div>
                     </div>
 
-                    <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-[160px]">
+                    <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-40">
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm uppercase tracking-wide text-indigo-300/60 font-semibold">

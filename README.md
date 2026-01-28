@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Field Services — Chamados TI
 
-## Getting Started
+Um painel administrativo para gerenciamento de chamados e usuários. Projeto baseado em Next.js (App Router), Tailwind CSS e integrações com Firebase (Auth / Firestore).
 
-First, run the development server:
+**Este README é um guia rápido para rodar o projeto localmente e entender os pontos mais importantes.**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## Pré-requisitos
+
+- Node.js >= 18
+- npm, yarn ou pnpm (uso de `npm` nos exemplos)
+- Conta e credenciais do Firebase (se quiser testar integrações Auth/Firestore)
+
+---
+
+## Instalação & execução (desenvolvimento)
+
+1. Instale dependências:
+
+```powershell
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Crie um arquivo de ambiente local (ex.: `.env.local`) e configure as variáveis necessárias (ver seção abaixo).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Inicie o servidor de desenvolvimento:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```powershell
+npm run dev
+```
 
-## Learn More
+Abra http://localhost:3000 no navegador.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Variáveis de ambiente (exemplo)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Crie `.env.local` na raiz com as variáveis que seu projeto usa. Exemplo genérico (não comite este arquivo):
 
-## Deploy on Vercel
+```env
+# Next.js
+NEXT_PUBLIC_APP_NAME="Field Services"
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Firebase (exemplos - ajuste conforme seu setup)
+NEXT_PUBLIC_FIREBASE_API_KEY=...
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
+FIREBASE_SERVICE_ACCOUNT=./serviceAccountKey.json
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Observação: não inclua credenciais reais no repositório. Use `.gitignore` (já incluído) para proteger arquivos sensíveis.
+
+---
+
+## Principais scripts
+
+- `npm run dev` — roda o app em modo desenvolvimento
+- `npm run build` — cria a build para produção
+- `npm start` — inicia a build em produção (após `npm run build`)
+
+---
+
+## Fluxo de administração de usuários (resumo)
+
+- O painel tem ações de administrador (mudar prédio, reset de senha, deletar usuário).
+- Fluxo de reset de senha (admin): o servidor gera uma senha temporária e cria um token de uso-único. O admin recupera a senha uma vez e entrega ao usuário.
+- Nota: em desenvolvimento a senha temporária pode estar configurada como `123456` se você tiver solicitado isso — troque para algo mais seguro em produção.
+
+---
+
+## Segurança e boas práticas
+
+- Nunca commit secrets (.env, service account keys, certificados).
+- Use o `.gitignore` já incluído para proteger arquivos sensíveis.
+- Para produção, gere senhas temporárias fortes e force alteração no primeiro login.
+
+---
+
+## Contribuindo
+
+- Abra uma issue antes de grandes mudanças.
+- Faça fork / branch e envie PR com descrição clara das mudanças.
+
+---
+
+## Remover segredos do histórico
+
+Se você cometeu acidentalmente um segredo no Git, remova-o do índice e considere usar `git filter-repo` ou BFG para limpar o histórico.
+
+---
+
+Se quiser, eu posso adicionar uma seção de Deploy (Vercel / Firebase Hosting) ou um guia de configuração do Firebase passo a passo. Deseja que eu adicione isso agora?
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).

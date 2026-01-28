@@ -155,6 +155,72 @@ export async function PUT(req: Request) {
     }
 
     // ==========================
+    // 🔐 DEFINIR SENHA TEMPORÁRIA (ADMIN)
+    // ==========================
+    if (action === "set-temp-password") {
+      console.log("[PUT /api/users] Ação: set-temp-password");
+
+      try {
+        const user = await adminAuth.getUser(userId);
+
+        // Senha temporária fixa conforme solicitado
+        const tempPassword = "123456";
+
+        // Atualiza a senha no Auth (Admin SDK)
+        await adminAuth.updateUser(userId, { password: tempPassword });
+
+        // Marca no Firestore que o usuário precisa trocar a senha no primeiro login
+        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
+        (async () => {
+          try {
+            await updateFirestoreREST("users", userId, {
+              firstLogin: true,
+              tempPasswordSetAt: new Date().toISOString(),
+              tempPasswordExpiresAt: expiresAt.toISOString(),
+            });
+
+            console.log(
+              "[PUT /api/users] [BG] ✓ temp password flag atualizado no Firestore",
+            );
+          } catch (err) {
+            console.error(
+              "[PUT /api/users] [BG] Erro ao atualizar Firestore (temp password):",
+              err,
+            );
+          }
+        })();
+
+        console.log(
+          "[PUT /api/users] Senha temporária definida para",
+          user.email,
+        );
+
+        // Cria um token temporário para recuperar a senha uma vez
+        const { randomBytes } = await import("crypto");
+        const token = randomBytes(32).toString("hex");
+
+        // Armazena a senha temporária em memória por curto período
+        const { setTempPassword } = await import("@/lib/temp-store");
+        setTempPassword(token, tempPassword, 2 * 60 * 1000); // 2 minutos
+
+        return NextResponse.json({
+          success: true,
+          token,
+          expiresAt: expiresAt.toISOString(),
+        });
+      } catch (err) {
+        console.error(
+          "[PUT /api/users] Erro ao definir senha temporária:",
+          err,
+        );
+        return NextResponse.json(
+          { error: err instanceof Error ? err.message : "Erro" },
+          { status: 500 },
+        );
+      }
+    }
+
+    // ==========================
     // 🏢 ALTERAR PRÉDIO
     // ==========================
     if (action === "change-building") {

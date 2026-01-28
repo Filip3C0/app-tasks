@@ -1,5 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, Plus, List, Check } from "lucide-react";
+import { Plus, List, Check } from "lucide-react";
 
 interface Props {
   open?: number;
@@ -19,7 +18,7 @@ export function DashboardCards({ open, inProgress, done }: Props) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {/* ABERTOS */}
-      <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 p-6 shadow-lg hover:shadow-xl transition min-h-[160px]">
+      <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 p-6 shadow-lg hover:shadow-xl transition min-h-40">
         <div className="flex items-start justify-between gap-6">
           <div className="flex-1">
             <p className="text-xs uppercase tracking-wide text-indigo-300/70 font-semibold">
@@ -36,14 +35,11 @@ export function DashboardCards({ open, inProgress, done }: Props) {
             <Plus className="w-6 h-6 text-rose-300" />
           </div>
         </div>
-        <div className="mt-4 flex items-center gap-2 text-xs">
-          <TrendingUp className="w-4 h-4 text-rose-300" />
-          <span className="text-rose-300 font-medium">+12% vs semana</span>
-        </div>
+        
       </div>
 
       {/* EM ATENDIMENTO */}
-      <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 p-6 shadow-lg hover:shadow-xl transition min-h-[160px]">
+      <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 p-6 shadow-lg hover:shadow-xl transition min-h-40">
         <div className="flex items-start justify-between gap-6">
           <div className="flex-1">
             <p className="text-xs uppercase tracking-wide text-indigo-300/70 font-semibold">
@@ -60,14 +56,11 @@ export function DashboardCards({ open, inProgress, done }: Props) {
             <List className="w-6 h-6 text-amber-300" />
           </div>
         </div>
-        <div className="mt-4 flex items-center gap-2 text-xs">
-          <TrendingDown className="w-4 h-4 text-amber-300" />
-          <span className="text-amber-300 font-medium">-5% vs semana</span>
-        </div>
+       
       </div>
 
       {/* FINALIZADOS */}
-      <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 p-6 shadow-lg hover:shadow-xl transition min-h-[160px]">
+      <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 p-6 shadow-lg hover:shadow-xl transition min-h-40">
         <div className="flex items-start justify-between gap-6">
           <div className="flex-1">
             <p className="text-xs uppercase tracking-wide text-indigo-300/70 font-semibold">
@@ -84,10 +77,7 @@ export function DashboardCards({ open, inProgress, done }: Props) {
             <Check className="w-6 h-6 text-emerald-300" />
           </div>
         </div>
-        <div className="mt-4 flex items-center gap-2 text-xs">
-          <TrendingUp className="w-4 h-4 text-emerald-300" />
-          <span className="text-emerald-300 font-medium">+18% vs semana</span>
-        </div>
+        
       </div>
     </div>
   );

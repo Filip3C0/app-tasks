@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { toast } from "@/components/ui/toast";
 
 export default function PerfilPage() {
   const [name, setName] = useState("");
@@ -53,9 +54,9 @@ export default function PerfilPage() {
         photoURL,
       });
 
-      alert("Perfil atualizado com sucesso!");
+      toast({ title: "Perfil atualizado com sucesso!", variant: "success" });
     } catch (error) {
-      alert("Erro ao salvar perfil");
+      toast({ title: "Erro ao salvar perfil", variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -65,7 +66,7 @@ export default function PerfilPage() {
     <AppLayout>
       <Sidebar />
       <MainContent>
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent mb-3">
+        <h1 className="text-4xl font-bold bg-linear-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent mb-3">
           Meu Perfil
         </h1>
         <p className="text-base text-indigo-300/70 mb-6">
@@ -74,7 +75,9 @@ export default function PerfilPage() {
 
         <Card className="max-w-lg rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm shadow-lg">
           <CardHeader>
-            <CardTitle>Informações pessoais</CardTitle>
+            <CardTitle className="text-indigo-400">
+              Informações pessoais
+            </CardTitle>
           </CardHeader>
 
           <CardContent className="space-y-4 p-6">
@@ -118,7 +121,7 @@ export default function PerfilPage() {
             <Button
               onClick={handleSave}
               disabled={loading}
-              className="px-6 py-2 rounded-lg bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-medium hover:from-indigo-500 hover:to-indigo-600 transition shadow-lg"
+              className="px-6 py-2 rounded-lg bg-linear-to-r from-indigo-600 to-indigo-700 text-white font-medium hover:from-indigo-500 hover:to-indigo-600 transition shadow-lg"
             >
               {loading ? "Salvando..." : "Salvar alterações"}
             </Button>

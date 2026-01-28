@@ -35,6 +35,12 @@ export function AuthGuard({ allowedRoles, children }: AuthGuardProps) {
         return;
       }
 
+      // If user is flagged to change password on first login, redirect them
+      if (data.firstLogin) {
+        router.push("/change-password");
+        return;
+      }
+
       setLoading(false);
     }
 

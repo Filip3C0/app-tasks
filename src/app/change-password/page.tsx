@@ -13,6 +13,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+import { toast } from "@/components/ui/toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -26,18 +27,24 @@ export default function TrocarSenhaPage() {
 
   async function handleChangePassword() {
     if (password.length < 6) {
-      alert("A senha deve ter pelo menos 6 caracteres");
+      toast({
+        title: "A senha deve ter pelo menos 6 caracteres",
+        variant: "warning",
+      });
       return;
     }
 
     if (password !== confirm) {
-      alert("As senhas não conferem");
+      toast({ title: "As senhas não conferem", variant: "warning" });
       return;
     }
 
     const user = auth.currentUser;
     if (!user) {
-      alert("Sessão inválida. Faça login novamente.");
+      toast({
+        title: "Sessão inválida. Faça login novamente.",
+        variant: "destructive",
+      });
       router.push("/login");
       return;
     }
@@ -56,26 +63,29 @@ export default function TrocarSenhaPage() {
       // 🚪 Encerra sessão
       await auth.signOut();
 
-      alert("Senha alterada com sucesso! Faça login novamente.");
+      toast({
+        title: "Senha alterada com sucesso! Faça login novamente.",
+        variant: "success",
+      });
+
       router.push("/login");
     } catch (error: any) {
       console.error("🔥 ERRO FIREBASE:", error);
-      alert(
-        "Erro: " +
-          (error?.code ?? "sem code") +
-          " - " +
-          (error?.message ?? "sem message"),
-      );
+      toast({
+        title: "Erro ao alterar senha",
+        description: `${error?.code ?? "sem code"} - ${error?.message ?? "sem message"}`,
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-slate-900 via-indigo-900 to-slate-900 px-4">
       <Card className="w-full max-w-md rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm shadow-lg">
         <CardHeader>
-          <CardTitle className="text-2xl font-semibold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+          <CardTitle className="text-2xl font-semibold bg-linear-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
             Trocar senha
           </CardTitle>
           <CardDescription className="text-indigo-300/70">
@@ -113,7 +123,7 @@ export default function TrocarSenhaPage() {
           </div>
 
           <Button
-            className="w-full px-6 py-2 rounded-lg bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-medium hover:from-indigo-500 hover:to-indigo-600 transition shadow-lg"
+            className="w-full px-6 py-2 rounded-lg bg-linear-to-r from-indigo-600 to-indigo-700 text-white font-medium hover:from-indigo-500 hover:to-indigo-600 transition shadow-lg"
             onClick={handleChangePassword}
             disabled={loading}
           >

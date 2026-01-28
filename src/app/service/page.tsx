@@ -6,7 +6,7 @@ import { db } from "@/lib/firebase";
 import { AuthGuard } from "@/components/auth-guard";
 
 import AppLayout from "@/components/layout/AppLayout";
-import Sidebar from "@/components/layout/Sidebar";
+import Sidebar from "./components/Sidebar";
 import MainContent from "@/components/layout/MainContent";
 
 import {
@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/toast";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
@@ -65,7 +66,7 @@ export default function ServicePage() {
       !description ||
       !buildingId
     ) {
-      alert("Preencha todos os campos");
+      toast({ title: "Preencha todos os campos", variant: "warning" });
       return;
     }
 
@@ -85,7 +86,7 @@ export default function ServicePage() {
         solvedAt: null,
       });
 
-      alert("Chamado criado com sucesso");
+      toast({ title: "Chamado criado com sucesso", variant: "success" });
 
       setCode("");
       setRequester("");
@@ -95,7 +96,7 @@ export default function ServicePage() {
       setBuildingId("");
     } catch (err) {
       console.error(err);
-      alert("Erro ao criar chamado");
+      toast({ title: "Erro ao criar chamado", variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -111,7 +112,7 @@ export default function ServicePage() {
         <MainContent>
           <div className="max-w-2xl space-y-6">
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+              <h1 className="text-4xl font-bold bg-linear-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
                 Abrir Chamado
               </h1>
               <p className="text-base text-indigo-300/70 mt-2">
@@ -128,7 +129,7 @@ export default function ServicePage() {
                   <Input
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
-                    placeholder="EX: CH-2024-001"
+                    placeholder="RF-12345"
                     className="bg-slate-700/50 border-indigo-500/30 text-white placeholder-indigo-300/50 focus:border-indigo-400/50 mt-2"
                   />
                 </div>
@@ -204,7 +205,7 @@ export default function ServicePage() {
                 <Button
                   onClick={handleCreateTicket}
                   disabled={loading}
-                  className="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white hover:from-indigo-500 hover:to-indigo-600 transition shadow-lg font-medium py-2 h-auto"
+                  className="w-full bg-linear-to-r from-indigo-600 to-indigo-700 text-white hover:from-indigo-500 hover:to-indigo-600 transition shadow-lg font-medium py-2 h-auto"
                 >
                   {loading ? "Criando chamado..." : "Criar Chamado"}
                 </Button>

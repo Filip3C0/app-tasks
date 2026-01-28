@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Copy } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -18,7 +19,6 @@ interface Props {
   userName: string;
   onActionSuccess?: () => void;
 }
-
 export function ResetPasswordModal({
   open,
   onOpenChange,
@@ -29,34 +29,46 @@ export function ResetPasswordModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState(false);
+  const [tempPassword, setTempPassword] = useState<string | null>(null);
+  const [expiresAt, setExpiresAt] = useState<string | null>(null);
 
   const handleConfirm = async () => {
     setLoading(true);
     setError("");
     setSuccess(false);
+    setTempPassword(null);
+    setExpiresAt(null);
 
     try {
       const response = await fetch("/api/users", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "reset-password",
-          userId,
-        }),
+        body: JSON.stringify({ action: "set-temp-password", userId }),
       });
 
-      if (!response.ok) {
-        throw new Error("Erro ao resetar senha");
+      const data = await response.json();
+
+      if (!response.ok || !data?.success) {
+        throw new Error(data?.error || "Erro ao definir senha temporária");
       }
 
+      // fetch the one-time password using the token
+      const r = await fetch(`/api/users/temp-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: data.token }),
+      });
+
+      const d = await r.json();
+
+      if (!d?.success) {
+        throw new Error(d?.error || "Erro ao recuperar senha temporária");
+      }
+
+      setTempPassword(d.tempPassword);
+      setExpiresAt(d.expiresAt || null);
       setSuccess(true);
-      setTimeout(() => {
-        onOpenChange(false);
-        setSuccess(false);
-        if (onActionSuccess) {
-          onActionSuccess();
-        }
-      }, 2000);
+      if (onActionSuccess) onActionSuccess();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro desconhecido");
     } finally {
@@ -82,14 +94,49 @@ export function ResetPasswordModal({
           </DialogHeader>
 
           {success ? (
-            <p className="text-sm text-green-400 font-medium">
-              ✓ Link de redefinição enviado com sucesso para {userName}!
-            </p>
+            tempPassword ? (
+              <div className="space-y-2">
+                <p className="text-sm text-green-400 font-medium">
+                  ✓ Senha temporária definida com sucesso para {userName}!
+                </p>
+                <div className="bg-slate-800/70 border border-slate-700 rounded-md p-3 flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-indigo-100 font-mono break-all">
+                      {tempPassword}
+                    </p>
+                    {expiresAt && (
+                      <p className="text-xs text-indigo-300/70 mt-1">
+                        Expira em: {new Date(expiresAt).toLocaleString()}
+                      </p>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (tempPassword)
+                        navigator.clipboard.writeText(tempPassword);
+                      setTempPassword(null);
+                    }}
+                    className="ml-4 p-2 rounded-md bg-slate-700 hover:bg-slate-700/90"
+                    aria-label="Copiar senha temporária"
+                  >
+                    <Copy className="w-4 h-4 text-indigo-200" />
+                  </button>
+                </div>
+                <p className="text-xs text-indigo-300/60">
+                  Informe a senha temporária ao usuário por um canal seguro. O
+                  usuário será obrigado a alterar a senha no primeiro login.
+                </p>
+              </div>
+            ) : (
+              <p className="text-sm text-green-400 font-medium">
+                ✓ Senha temporária definida com sucesso!
+              </p>
+            )
           ) : (
             <>
               <p className="text-sm text-indigo-300/70">
-                Uma nova senha será enviada para{" "}
-                <strong className="text-white">{userName}</strong>.
+                Uma nova senha temporária será definida e o usuário deverá
+                alterá-la no próximo login.
               </p>
               {error && <p className="text-sm text-rose-400">{error}</p>}
             </>
