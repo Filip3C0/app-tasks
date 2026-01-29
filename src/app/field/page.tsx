@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import {
   collection,
   doc,
@@ -10,7 +10,6 @@ import {
   updateDoc,
   where,
   Timestamp,
-  orderBy,
 } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { AuthGuard } from "@/components/auth-guard";
@@ -23,7 +22,6 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "@/components/ui/toast";
 
 type TicketStatus = "aberto" | "em_atendimento" | "finalizado";
 
@@ -46,7 +44,6 @@ export default function FieldPage() {
   const [buildingId, setBuildingId] = useState<string | null>(null);
   const [loadingTicketId, setLoadingTicketId] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const seenNotifsRef = useRef<Set<string>>(new Set());
 
   const currentUser = auth?.currentUser;
 
@@ -99,51 +96,6 @@ export default function FieldPage() {
 
     return () => unsub();
   }, [buildingId]);
-
-  /* ================= NOTIFICATIONS ================= */
-
-  useEffect(() => {
-    if (!currentUser || !db) return;
-
-    const q = query(
-      collection(db as any, "notifications"),
-      where("userId", "==", currentUser.uid),
-      where("read", "==", false),
-      orderBy("createdAt", "desc"),
-    );
-
-    const unsub = onSnapshot(q, (snap) => {
-      snap.docChanges().forEach((change) => {
-        if (change.type !== "added") return;
-
-        const notifId = change.doc.id;
-        if (seenNotifsRef.current.has(notifId)) return;
-
-        const data = change.doc.data() as any;
-
-        toast({
-          title: `Novo chamado: ${data.code || data.ticketId}`,
-          description: data.requester
-            ? `Solicitante: ${data.requester}`
-            : `Prédio: ${data.buildingId}`,
-          variant: "info",
-        });
-
-  const next = new Set(seenNotifsRef.current);
-  next.add(notifId);
-  seenNotifsRef.current = next;
-
-        updateDoc(change.doc.ref, {
-          read: true,
-          deliveredAt: Timestamp.now(),
-        }).catch(() => {
-          /* swallow */
-        });
-      });
-    });
-
-    return () => unsub();
-  }, [currentUser]);
 
   /* ================= ACTIONS ================= */
 
