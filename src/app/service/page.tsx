@@ -19,7 +19,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
-import { Menu, X } from "lucide-react";
 import { toast } from "@/components/ui/toast";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
