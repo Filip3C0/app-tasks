@@ -5,6 +5,25 @@ if (!admin.apps.length) {
   admin.initializeApp();
 }
 
+async function sendToTokens(
+  tokens: string[],
+  payload: admin.messaging.MessagingPayload,
+) {
+  if (tokens.length === 0) return;
+
+  const messaging = admin.messaging();
+  const chunks: string[][] = [];
+  for (let i = 0; i < tokens.length; i += 500) {
+    chunks.push(tokens.slice(i, i + 500));
+  }
+
+  await Promise.all(
+    chunks.map((chunk) =>
+      messaging.sendEachForMulticast({ tokens: chunk, ...payload }),
+    ),
+  );
+}
+
 export const notifyFieldOnTicketCreated = onDocumentCreated(
   "tickets/{ticketId}",
   async (event) => {
@@ -13,7 +32,6 @@ export const notifyFieldOnTicketCreated = onDocumentCreated(
 
     const ticket = snap.data() as any;
     const buildingId = ticket.buildingId as string | undefined;
-
     if (!buildingId) return;
 
     const usersSnap = await admin
@@ -25,22 +43,40 @@ export const notifyFieldOnTicketCreated = onDocumentCreated(
 
     if (usersSnap.empty) return;
 
-    const batch = admin.firestore().batch();
+    const userIds = usersSnap.docs.map((d) => d.id);
 
-    usersSnap.forEach((userDoc) => {
-      const notifRef = admin.firestore().collection("notifications").doc();
-      batch.set(notifRef, {
-        userId: userDoc.id,
+    const allTokens: string[] = [];
+    const chunkSize = 10;
+    for (let i = 0; i < userIds.length; i += chunkSize) {
+      const slice = userIds.slice(i, i + chunkSize);
+      const tokensSnap = await admin
+        .firestore()
+        .collection("fcmTokens")
+        .where("userId", "in", slice)
+        .get();
+
+      tokensSnap.forEach((t) => allTokens.push(t.id));
+    }
+
+    if (allTokens.length === 0) return;
+
+    const title = ticket.code ? `Novo chamado ${ticket.code}` : "Novo chamado";
+    const body = ticket.requester
+      ? `Solicitante: ${ticket.requester}`
+      : `Prédio: ${buildingId}`;
+
+    const payload: admin.messaging.MessagingPayload = {
+      notification: {
+        title,
+        body,
+      },
+      data: {
         ticketId: event.params.ticketId,
         buildingId,
-        code: ticket.code ?? "",
-        requester: ticket.requester ?? "",
         status: ticket.status ?? "aberto",
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        read: false,
-      });
-    });
+      },
+    };
 
-    await batch.commit();
+    await sendToTokens(allTokens, payload);
   },
 );

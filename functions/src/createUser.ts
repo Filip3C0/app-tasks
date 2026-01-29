@@ -8,30 +8,25 @@ if (!admin.apps.length) {
 const DEFAULT_PASSWORD = "123456";
 
 export const createUser = onCall(async ({ auth, data }) => {
-   if (!auth) {
+  if (!auth) {
     throw new HttpsError("unauthenticated", "Usuário não autenticado");
   }
 
-
-  const requesterSnap = await admin
-    .firestore()
-    .doc(`users/${auth.uid}`)
-    .get();
+  const requesterSnap = await admin.firestore().doc(`users/${auth.uid}`).get();
 
   if (!requesterSnap.exists || requesterSnap.data()?.role !== "admin") {
     throw new HttpsError(
       "permission-denied",
-      "Apenas administradores podem criar usuários"
+      "Apenas administradores podem criar usuários",
     );
   }
-
 
   const { name, email, role, buildingId } = data;
 
   if (!name || !email || !role) {
     throw new HttpsError(
       "invalid-argument",
-      "Nome, email e perfil são obrigatórios"
+      "Nome, email e perfil são obrigatórios",
     );
   }
 
@@ -39,14 +34,13 @@ export const createUser = onCall(async ({ auth, data }) => {
     throw new HttpsError("invalid-argument", "Perfil inválido");
   }
 
-  
   let resolvedBuildingId: string | null = null;
 
   if (role === "field") {
     if (!buildingId) {
       throw new HttpsError(
         "invalid-argument",
-        "Técnico deve ter um prédio definido"
+        "Técnico deve ter um prédio definido",
       );
     }
 
@@ -56,16 +50,12 @@ export const createUser = onCall(async ({ auth, data }) => {
       .get();
 
     if (!buildingSnap.exists) {
-      throw new HttpsError(
-        "invalid-argument",
-        "Prédio informado não existe"
-      );
+      throw new HttpsError("invalid-argument", "Prédio informado não existe");
     }
 
     resolvedBuildingId = buildingId;
   }
 
- 
   let userRecord;
 
   try {
@@ -82,12 +72,11 @@ export const createUser = onCall(async ({ auth, data }) => {
     throw new HttpsError("internal", "Erro ao criar usuário");
   }
 
-
   await admin.firestore().doc(`users/${userRecord.uid}`).set({
     name,
     email,
     role,
-    buildingId: resolvedBuildingId, 
+    buildingId: resolvedBuildingId,
     firstLogin: true,
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
   });

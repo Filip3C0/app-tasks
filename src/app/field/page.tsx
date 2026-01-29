@@ -22,6 +22,7 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { registerFieldPushToken } from "@/lib/fcm";
 
 type TicketStatus = "aberto" | "em_atendimento" | "finalizado";
 
@@ -44,6 +45,7 @@ export default function FieldPage() {
   const [buildingId, setBuildingId] = useState<string | null>(null);
   const [loadingTicketId, setLoadingTicketId] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [tokenRegistered, setTokenRegistered] = useState(false);
 
   const currentUser = auth?.currentUser;
 
@@ -60,6 +62,20 @@ export default function FieldPage() {
 
     loadUserBuilding();
   }, [currentUser]);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    if (tokenRegistered) return;
+
+    registerFieldPushToken(currentUser.uid)
+      .then((token) => {
+        if (token) setTokenRegistered(true);
+      })
+      .catch((err) => {
+        // eslint-disable-next-line no-console
+        console.warn("[fcm] falha ao registrar token", err);
+      });
+  }, [currentUser, tokenRegistered]);
 
   useEffect(() => {
     const handleResize = () => {

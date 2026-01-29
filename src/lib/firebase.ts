@@ -29,6 +29,8 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || process.env.FIREBASE_APP_ID,
 };
 
+export const firebaseClientConfig = firebaseConfig;
+
 // Guard initialization (avoid multiple inits during HMR)
 // Ensure the Firebase *client* is only initialized in the browser
 // (prevents prerender/SSR attempts to initialize the client and
