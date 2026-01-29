@@ -23,7 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Loader2, Search } from "lucide-react";
+import { Loader2, Search, Menu, X } from "lucide-react";
 
 type TicketStatus = "aberto" | "em_atendimento" | "finalizado";
 
@@ -80,6 +80,19 @@ export default function TicketsPage() {
   const [status, setStatus] = useState<TicketStatus | "todos">("todos");
   const [building, setBuilding] = useState<string>("todos");
   const [loading, setLoading] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window !== "undefined" && window.innerWidth >= 1024) {
+        setMenuOpen(false);
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   /* ================= REALTIME COLLECTIONS ================= */
 
@@ -92,8 +105,8 @@ export default function TicketsPage() {
           const docData = d.data() as any;
           return {
             id: d.id,
-            code: docData.code ?? d.id,
-            requester: docData.requester?.name ?? docData.requester ?? "—",
+            code: docData.code ?? "",
+            requester: docData.requester ?? "",
             sector: docData.sector ?? "",
             room: docData.room ?? "",
             description: docData.description ?? "",
@@ -159,32 +172,45 @@ export default function TicketsPage() {
 
   return (
     <AuthGuard allowedRoles={["admin"]}>
-      <div className="flex min-h-screen bg-linear-to-br from-slate-900 via-indigo-900 to-slate-900 text-white">
-        <Sidebar />
+      <div className="flex min-h-screen bg-linear-to-br from-slate-900 via-indigo-900 to-slate-900 text-white overflow-x-hidden">
+        <Sidebar open={menuOpen} onOpenChange={setMenuOpen} />
 
-        <main className="flex-1 flex flex-col">
+        <main className="flex-1 flex flex-col min-w-0">
           {/* HEADER */}
           <div className="border-b border-indigo-500/30 bg-slate-900/80 backdrop-blur-md sticky top-0 z-10">
-            <div className="px-10 py-8">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-4xl font-bold bg-linear-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-                    Chamados
-                  </h1>
-                  <p className="text-base text-indigo-300/70 mt-2">
-                    Lista em tempo real da coleção de tickets
-                  </p>
+            <div className="px-4 py-6 sm:px-10 sm:py-8">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between min-w-0">
+                <div className="flex items-center gap-3 min-w-0">
+                  <button
+                    className="lg:hidden flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900/90 border border-indigo-500/40 text-indigo-100 shadow-md backdrop-blur"
+                    onClick={() => setMenuOpen((v) => !v)}
+                    aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
+                  >
+                    {menuOpen ? (
+                      <X className="w-5 h-5" />
+                    ) : (
+                      <Menu className="w-5 h-5" />
+                    )}
+                  </button>
+                  <div className="min-w-0">
+                    <h1 className="text-3xl sm:text-4xl font-bold bg-linear-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                      Chamados
+                    </h1>
+                    <p className="text-base text-indigo-300/70 mt-2">
+                      Lista em tempo real da coleção de tickets
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
           {/* CONTENT */}
-          <div className="flex-1 overflow-auto">
-            <div className="p-10 space-y-8">
-              <section className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                  <div className="flex items-center gap-2 bg-slate-900/60 border border-indigo-500/30 rounded-xl px-4 py-2 w-full lg:max-w-md">
+          <div className="flex-1 overflow-auto min-w-0">
+            <div className="p-4 sm:p-10 space-y-6 sm:space-y-8 min-w-0">
+              <section className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-4 sm:p-6 shadow-lg min-w-0">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between min-w-0">
+                  <div className="flex items-center gap-2 bg-slate-900/60 border border-indigo-500/30 rounded-xl px-4 py-2 w-full lg:max-w-md min-w-0">
                     <Search className="w-4 h-4 text-indigo-300" />
                     <Input
                       value={search}
@@ -194,14 +220,14 @@ export default function TicketsPage() {
                     />
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+                  <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto min-w-0">
                     <Select
                       value={status}
                       onValueChange={(v) =>
                         setStatus(v as TicketStatus | "todos")
                       }
                     >
-                      <SelectTrigger className="bg-slate-900/60 border-indigo-500/30 text-white min-w-[180px]">
+                      <SelectTrigger className="bg-slate-900/60 border-indigo-500/30 text-white min-w-45">
                         <SelectValue placeholder="Status" />
                       </SelectTrigger>
                       <SelectContent>
@@ -215,7 +241,7 @@ export default function TicketsPage() {
                     </Select>
 
                     <Select value={building} onValueChange={setBuilding}>
-                      <SelectTrigger className="bg-slate-900/60 border-indigo-500/30 text-white min-w-[200px]">
+                      <SelectTrigger className="bg-slate-900/60 border-indigo-500/30 text-white min-w-50">
                         <SelectValue placeholder="Prédio" />
                       </SelectTrigger>
                       <SelectContent>
@@ -230,9 +256,9 @@ export default function TicketsPage() {
                   </div>
                 </div>
 
-                <div className="mt-6 rounded-xl border border-indigo-500/20 bg-slate-900/50">
-                  <div className="p-4">
-                    <Table className="text-sm text-indigo-50">
+                <div className="mt-6 rounded-xl border border-indigo-500/20 bg-slate-900/50 overflow-x-auto -mx-2 sm:mx-0 px-2 sm:px-0">
+                  <div className="p-3 sm:p-4 min-w-full">
+                    <Table className="text-sm text-indigo-50 min-w-160">
                       <TableHeader>
                         <TableRow className="border-indigo-500/20">
                           <TableHead className="text-indigo-200">

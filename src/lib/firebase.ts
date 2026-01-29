@@ -1,5 +1,9 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import {
+  getAuth,
+  setPersistence,
+  browserLocalPersistence,
+} from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getFunctions } from "firebase/functions";
 
@@ -43,6 +47,17 @@ if (typeof window !== "undefined") {
 }
 
 export const auth = typeof window !== "undefined" && app ? getAuth(app) : null;
+
+// Force local persistence so a browser reload keeps the session (Firebase will
+// auto-refresh the ID token in the background). This is lightweight and only
+// runs client-side.
+if (auth) {
+  // Intentionally ignore the returned promise; if it fails we just log.
+  setPersistence(auth, browserLocalPersistence).catch((err) => {
+    // eslint-disable-next-line no-console
+    console.warn("[firebase] persistence setup failed", err);
+  });
+}
 export const db =
   typeof window !== "undefined" && app ? getFirestore(app) : null;
 export const functions =

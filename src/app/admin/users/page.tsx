@@ -7,8 +7,6 @@ import { db } from "@/lib/firebase";
 
 import { Sidebar } from "../components/Sidebar";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -18,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Menu, X } from "lucide-react";
 
 import { RoleBadge } from "../components/RoleBadge";
 import { Users, Search } from "lucide-react";
@@ -47,6 +46,7 @@ export default function UsersPage() {
 
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 5;
+  const [menuOpen, setMenuOpen] = useState(false);
 
   /* ================= LOAD ================= */
 
@@ -104,23 +104,37 @@ export default function UsersPage() {
   /* ================= UI ================= */
 
   return (
-    <div className="flex min-h-screen bg-linear-to-br from-slate-900 via-indigo-900 to-slate-900">
-      <Sidebar />
+    <div className="flex min-h-screen bg-linear-to-br from-slate-900 via-indigo-900 to-slate-900 overflow-x-hidden">
+      <Sidebar open={menuOpen} onOpenChange={setMenuOpen} />
 
-      <main className="flex-1 flex flex-col">
+      <main className="flex-1 flex flex-col min-w-0">
         {/* HEADER SECTION */}
         <div className="border-b border-indigo-500/30 bg-slate-900/80 backdrop-blur-md sticky top-0 z-10">
-          <div className="px-10 py-8">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-4xl font-bold bg-linear-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-                  Gerenciar Usuários
-                </h1>
-                <p className="text-base text-indigo-300/70 mt-2">
-                  Gerencie os usuários do sistema e suas permissões
-                </p>
+          <div className="px-4 py-6 sm:px-10 sm:py-8">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-3 min-w-0">
+                <button
+                  className="lg:hidden flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900/90 border border-indigo-500/40 text-indigo-100 shadow-md backdrop-blur"
+                  onClick={() => setMenuOpen((v) => !v)}
+                  aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
+                >
+                  {menuOpen ? (
+                    <X className="w-5 h-5" />
+                  ) : (
+                    <Menu className="w-5 h-5" />
+                  )}
+                </button>
+                <div className="min-w-0">
+                  <h1 className="text-3xl sm:text-4xl font-bold bg-linear-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                    Gerenciar Usuários
+                  </h1>
+                  <p className="text-base text-indigo-300/70 mt-2">
+                    Gerencie os usuários do sistema e suas permissões
+                  </p>
+                </div>
               </div>
-              <div className="flex gap-4">
+
+              <div className="flex gap-3 sm:gap-4 flex-wrap">
                 <Button
                   onClick={() => router.push("/admin/users/create")}
                   className="bg-linear-to-r from-indigo-600 to-indigo-700 text-white text-base font-medium shadow-lg hover:from-indigo-500 hover:to-indigo-600"
@@ -133,11 +147,11 @@ export default function UsersPage() {
         </div>
 
         {/* MAIN CONTENT */}
-        <div className="flex-1 overflow-auto">
-          <div className="p-10 space-y-8">
+        <div className="flex-1 overflow-auto min-w-0">
+          <div className="p-4 sm:p-10 space-y-8 min-w-0">
             {/* FILTERS SECTION */}
-            <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="md:col-span-2 rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition">
+            <section className="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6 min-w-0">
+              <div className="md:col-span-2 rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-4 sm:p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-w-0">
                 <label className="block text-sm font-semibold text-indigo-300 mb-3">
                   Buscar Usuário
                 </label>
@@ -152,7 +166,7 @@ export default function UsersPage() {
                 />
               </div>
 
-              <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition">
+              <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-4 sm:p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-w-0">
                 <label className="block text-sm font-semibold text-indigo-300 mb-3">
                   Filtrar por Cargo
                 </label>
@@ -175,7 +189,7 @@ export default function UsersPage() {
                 </Select>
               </div>
 
-              <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition flex items-end">
+              <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-4 sm:p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition flex items-end min-w-0">
                 <Button className="w-full bg-linear-to-r from-indigo-600 to-indigo-700 text-white font-medium hover:from-indigo-500 hover:to-indigo-600 transition text-base shadow-lg">
                   Limpar Filtros
                 </Button>
@@ -183,7 +197,7 @@ export default function UsersPage() {
             </section>
 
             {/* USERS LIST */}
-            <section className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-8 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition">
+            <section className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 sm:p-8 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-w-0">
               <div className="mb-6">
                 <h2 className="text-xl font-semibold text-indigo-300">
                   Lista de Usuários
@@ -215,8 +229,8 @@ export default function UsersPage() {
                     </div>
                   </div>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
+                  <div className="overflow-x-auto rounded-xl -mx-2 sm:mx-0 px-2 sm:px-0">
+                    <table className="w-full min-w-150">
                       <thead className="border-b border-indigo-500/30">
                         <tr>
                           <th className="text-left py-4 px-4 text-sm font-semibold text-indigo-300">
@@ -270,7 +284,7 @@ export default function UsersPage() {
 
             {/* PAGINATION */}
             {!loading && totalPages > 1 && (
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-sm text-indigo-300/70">
                   Mostrando{" "}
                   <span className="font-semibold">

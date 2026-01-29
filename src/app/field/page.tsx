@@ -17,6 +17,7 @@ import { AuthGuard } from "@/components/auth-guard";
 import AppLayout from "@/components/layout/AppLayout";
 import Sidebar from "@/components/layout/Sidebar";
 import MainContent from "@/components/layout/MainContent";
+import { Menu, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -42,6 +43,7 @@ export default function FieldPage() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [buildingId, setBuildingId] = useState<string | null>(null);
   const [loadingTicketId, setLoadingTicketId] = useState<string | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const currentUser = auth?.currentUser;
 
@@ -58,6 +60,18 @@ export default function FieldPage() {
 
     loadUserBuilding();
   }, [currentUser]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window !== "undefined" && window.innerWidth >= 1024) {
+        setMenuOpen(false);
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   /* ================= REALTIME TICKETS ================= */
 
@@ -141,14 +155,27 @@ export default function FieldPage() {
   return (
     <AuthGuard allowedRoles={["field"]}>
       <AppLayout>
-        <Sidebar />
+        <Sidebar open={menuOpen} onOpenChange={setMenuOpen} />
 
         <MainContent>
           <div className="space-y-6">
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-                Chamados do meu prédio
-              </h1>
+              <div className="flex items-center gap-3">
+                <button
+                  className="lg:hidden flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900/90 border border-indigo-500/40 text-indigo-100 shadow-md backdrop-blur"
+                  onClick={() => setMenuOpen((v) => !v)}
+                  aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
+                >
+                  {menuOpen ? (
+                    <X className="w-5 h-5" />
+                  ) : (
+                    <Menu className="w-5 h-5" />
+                  )}
+                </button>
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                  Chamados do meu prédio
+                </h1>
+              </div>
               <p className="text-base text-indigo-300/70 mt-2">
                 Acompanhe e atenda os chamados disponíveis
               </p>

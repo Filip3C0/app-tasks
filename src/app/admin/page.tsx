@@ -13,7 +13,7 @@ import { TicketsByBuildingChart } from "./components/TicketsByBuildingChart";
 import { ReportModal } from "./components/ReportModal";
 
 import { Button } from "@/components/ui/button";
-import { Check, Clock, RefreshCw, BarChart } from "lucide-react";
+import { Check, Clock, RefreshCw, BarChart, Menu, X } from "lucide-react";
 
 /* ================= TYPES ================= */
 
@@ -40,7 +40,6 @@ type Building = {
   name: string;
 };
 
-
 export default function AdminPage() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [buildings, setBuildings] = useState<Building[]>([]);
@@ -48,6 +47,19 @@ export default function AdminPage() {
   const [building, setBuilding] = useState("todos");
   const [technician, setTechnician] = useState("todos");
   const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window !== "undefined" && window.innerWidth >= 1024) {
+        setMenuOpen(false);
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   /* ================= REALTIME TICKETS ================= */
 
@@ -97,7 +109,6 @@ export default function AdminPage() {
     });
   }, [tickets, building, technician]);
 
- 
   /* ================= KPIs ================= */
 
   const open = filteredTickets.filter((t) => t.status === "aberto").length;
@@ -110,15 +121,13 @@ export default function AdminPage() {
 
   const hasData = open + inProgress + done > 0;
 
-
-
   /* ================= UI ================= */
 
   return (
     <AuthGuard allowedRoles={["admin"]}>
       <div className="flex min-h-screen bg-linear-to-br from-slate-900 via-indigo-900 to-slate-900">
         {/* ================= Sidebar Page ================= */}
-        <Sidebar />
+        <Sidebar open={menuOpen} onOpenChange={setMenuOpen} />
         {/* ================= Main Content ================= */}
         {/* REPORT MODAL */}
         <ReportModal
@@ -131,12 +140,25 @@ export default function AdminPage() {
         <main className="flex-1 flex flex-col">
           {/* HEADER SECTION */}
           <div className="border-b border-indigo-500/30 bg-slate-900/80 backdrop-blur-md sticky top-0 z-10">
-            <div className="px-10 py-8">
-              <div className="flex items-center justify-between">
+            <div className="px-4 py-6 sm:px-10 sm:py-8">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
-                  <h1 className="text-4xl font-bold bg-linear-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-                    Dashboard Geral
-                  </h1>
+                  <div className="flex items-center gap-3">
+                    <button
+                      className="lg:hidden flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900/90 border border-indigo-500/40 text-indigo-100 shadow-md backdrop-blur"
+                      onClick={() => setMenuOpen((v) => !v)}
+                      aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
+                    >
+                      {menuOpen ? (
+                        <X className="w-5 h-5" />
+                      ) : (
+                        <Menu className="w-5 h-5" />
+                      )}
+                    </button>
+                    <h1 className="text-3xl sm:text-4xl font-bold bg-linear-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                      Dashboard Geral
+                    </h1>
+                  </div>
                   <p className="text-base text-indigo-300/70 mt-2">
                     Visão geral dos chamados
                   </p>
@@ -147,7 +169,7 @@ export default function AdminPage() {
 
           {/* MAIN CONTENT - SCROLLABLE */}
           <div className="flex-1 overflow-auto">
-            <div className="p-10 space-y-10">
+            <div className="p-4 sm:p-10 space-y-8 sm:space-y-10">
               {/* KPI CARDS */}
               <section>
                 <DashboardCards
@@ -158,11 +180,11 @@ export default function AdminPage() {
               </section>
 
               {/* FILTERS & CHARTS GRID */}
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-10 auto-rows-max">
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 sm:gap-10 auto-rows-max">
                 {/* LEFT COLUMN - FILTERS */}
                 <div className="lg:col-span-1 space-y-8">
                   {/* BUILDING FILTER */}
-                  <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-40">
+                  <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-4 sm:p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-40">
                     <div className="space-y-6">
                       {/*Filter By Building*/}
                       <div>
@@ -183,7 +205,7 @@ export default function AdminPage() {
                   </div>
 
                   {/* TECHNICIAN FILTER */}
-                  <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-40">
+                  <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-4 sm:p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-40">
                     <div className="space-y-6">
                       <div>
                         <h2 className="font-semibold text-indigo-300 text-lg">
@@ -203,7 +225,7 @@ export default function AdminPage() {
                   </div>
 
                   {/* ACTIONS CARD */}
-                  <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-40">
+                  <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-4 sm:p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-40">
                     <div className="space-y-4">
                       <h3 className="font-semibold text-indigo-300 text-lg">
                         Ações Rápidas
@@ -222,7 +244,7 @@ export default function AdminPage() {
                 {/* RIGHT COLUMN - CHART & STATS */}
                 <div className="lg:col-span-3 space-y-8">
                   {/* CHART */}
-                  <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-75">
+                  <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-4 sm:p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-75">
                     <div className="space-y-8">
                       <div>
                         <h2 className="font-semibold text-indigo-300 text-xl">
@@ -245,7 +267,7 @@ export default function AdminPage() {
                           </div>
                         </div>
                       ) : (
-                        <div className="h-96">
+                        <div className="h-64 sm:h-80 lg:h-96">
                           <TicketsByBuildingChart tickets={filteredTickets} />
                         </div>
                       )}
@@ -253,8 +275,8 @@ export default function AdminPage() {
                   </div>
 
                   {/* STATS ROW */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-40">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+                    <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-4 sm:p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-40">
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm uppercase tracking-wide text-indigo-300/60 font-semibold">
@@ -274,9 +296,9 @@ export default function AdminPage() {
                         </div>
                       </div>
                     </div>
-                    
+
                     {/*CONCLUSION, TIMER*/}
-                    <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-40">
+                    <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-4 sm:p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-40">
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm uppercase tracking-wide text-indigo-300/60 font-semibold">
@@ -292,7 +314,7 @@ export default function AdminPage() {
                       </div>
                     </div>
 
-                    <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-40">
+                    <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/50 backdrop-blur-sm p-4 sm:p-6 shadow-lg hover:shadow-xl hover:border-indigo-400/50 transition min-h-40">
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm uppercase tracking-wide text-indigo-300/60 font-semibold">
@@ -308,10 +330,6 @@ export default function AdminPage() {
                       </div>
                     </div>
                   </div>
-                
-                  
-                   
-                  
                 </div>
               </div>
             </div>
