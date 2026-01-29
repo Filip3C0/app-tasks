@@ -282,13 +282,6 @@ firebase deploy --only functions
 - Verificar documento `users/{uid}` existe.
 - Conferir `role` e `firstLogin`.
 
----
-
-## 14. Melhorias futuras (sugestões)
-- Persistir senha temporária em Firestore (evitar in-memory).
-- Automatizar envio de email no reset de senha.
-- Relatórios com filtros avançados e exportação CSV.
-- Dashboards adicionais para performance por técnico.
 
 ---
 
