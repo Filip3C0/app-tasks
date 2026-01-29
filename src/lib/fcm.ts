@@ -18,7 +18,8 @@ export async function registerFieldPushToken(userId: string) {
   if (!supported) return null;
 
   // Push API precisa de contexto seguro: https ou http://localhost
-  const isSecure = window.isSecureContext || window.location.hostname === "localhost";
+  const isSecure =
+    window.isSecureContext || window.location.hostname === "localhost";
   if (!isSecure) {
     console.warn("[fcm] contexto inseguro", {
       origin: window.location.origin,
@@ -56,16 +57,22 @@ export async function registerFieldPushToken(userId: string) {
     // Verifica se o SW está acessível (evita 404 silencioso)
     await fetch(`/firebase-messaging-sw.js`, { cache: "no-store" });
 
-    swReg = await navigator.serviceWorker.register(`/firebase-messaging-sw.js`, {
-      scope: `/`,
-    });
+    swReg = await navigator.serviceWorker.register(
+      `/firebase-messaging-sw.js`,
+      {
+        scope: `/`,
+      },
+    );
     await navigator.serviceWorker.ready;
 
     // Garante que exista um controller antes de seguir
     if (!navigator.serviceWorker.controller) {
       await new Promise<void>((resolve) => {
         const listener = () => {
-          navigator.serviceWorker.removeEventListener("controllerchange", listener);
+          navigator.serviceWorker.removeEventListener(
+            "controllerchange",
+            listener,
+          );
           resolve();
         };
         navigator.serviceWorker.addEventListener("controllerchange", listener);
@@ -81,7 +88,9 @@ export async function registerFieldPushToken(userId: string) {
   let token: string | null = null;
   try {
     // Log permissões do Push antes do getToken
-    const permState = await swReg.pushManager.permissionState({ userVisibleOnly: true });
+    const permState = await swReg.pushManager.permissionState({
+      userVisibleOnly: true,
+    });
     console.info("[fcm] push permissionState", permState);
 
     token = await getToken(messaging, {
