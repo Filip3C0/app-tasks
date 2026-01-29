@@ -21,10 +21,6 @@ export async function registerFieldPushToken(userId: string) {
   const isSecure =
     window.isSecureContext || window.location.hostname === "localhost";
   if (!isSecure) {
-    console.warn("[fcm] contexto inseguro", {
-      origin: window.location.origin,
-      isSecureContext: window.isSecureContext,
-    });
     return null;
   }
 
@@ -41,13 +37,6 @@ export async function registerFieldPushToken(userId: string) {
     console.warn("[fcm] messagingSenderId ausente no config");
     return null;
   }
-
-  console.info("[fcm] config", {
-    origin: window.location.origin,
-    projectId: firebaseClientConfig.projectId,
-    senderId,
-    vapidKeyPrefix: vapidKey.slice(0, 12),
-  });
 
   let swReg: ServiceWorkerRegistration;
   try {
@@ -87,12 +76,6 @@ export async function registerFieldPushToken(userId: string) {
 
   let token: string | null = null;
   try {
-    // Log permissões do Push antes do getToken
-    const permState = await swReg.pushManager.permissionState({
-      userVisibleOnly: true,
-    });
-    console.info("[fcm] push permissionState", permState);
-
     token = await getToken(messaging, {
       vapidKey,
       serviceWorkerRegistration: swReg,
@@ -103,8 +86,6 @@ export async function registerFieldPushToken(userId: string) {
       message: err?.message,
       name: err?.name,
       stack: err?.stack,
-      origin: window.location.origin,
-      isSecureContext: window.isSecureContext,
     });
     return null;
   }
