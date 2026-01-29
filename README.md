@@ -4,6 +4,8 @@ Um painel administrativo para gerenciamento de chamados e usuários. Projeto bas
 
 **Este README é um guia rápido para rodar o projeto localmente e entender os pontos mais importantes.**
 
+➡️ **Documentação completa do sistema:** `docs/SISTEMA.md`
+
 ---
 
 ## Pré-requisitos
