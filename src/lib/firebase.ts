@@ -6,6 +6,7 @@ import {
 } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getFunctions } from "firebase/functions";
+import { getMessaging } from "firebase/messaging";
 
 // Read config from environment variables. Use NEXT_PUBLIC_* for client-side.
 const firebaseConfig = {
@@ -64,3 +65,5 @@ export const db =
   typeof window !== "undefined" && app ? getFirestore(app) : null;
 export const functions =
   typeof window !== "undefined" && app ? getFunctions(app) : null;
+export const messaging =
+  typeof window !== "undefined" && app ? getMessaging(app) : null;

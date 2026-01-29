@@ -1,4 +1,4 @@
-import { getMessaging, getToken, isSupported } from "firebase/messaging";
+import { getMessaging, getToken, isSupported, onMessage } from "firebase/messaging";
 import { httpsCallable } from "firebase/functions";
 import { functions } from "./firebase";
 import { firebaseClientConfig } from "./firebase";
@@ -40,6 +40,21 @@ export async function registerFieldPushToken(userId: string) {
 
   const registerFn = httpsCallable(functions, "registerFcmToken");
   await registerFn({ token, platform: "web" });
+
+  // Foreground handler to surface a system notification when the tab está aberta
+  onMessage(messaging, (payload) => {
+    const title = payload.notification?.title || "Chamado";
+    const body = payload.notification?.body || "";
+
+    if (Notification.permission === "granted") {
+      navigator.serviceWorker.getRegistration().then((reg) => {
+        reg?.showNotification(title, {
+          body,
+          data: payload.data,
+        });
+      });
+    }
+  });
 
   return token;
 }

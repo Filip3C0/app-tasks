@@ -1,8 +1,8 @@
 import { setGlobalOptions } from "firebase-functions";
 import { createUser } from "./createUser";
 import { registerFcmToken } from "./registerFcmToken";
-import { notifyFieldOnTicketCreated } from "./ticketNotifications";
+import { notifyFieldOnTicketCreatedV2 } from "./ticketNotifications";
 
-export { createUser, registerFcmToken, notifyFieldOnTicketCreated };
+export { createUser, registerFcmToken, notifyFieldOnTicketCreatedV2 };
 
 setGlobalOptions({ maxInstances: 10 });

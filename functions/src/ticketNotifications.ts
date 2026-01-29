@@ -7,7 +7,7 @@ if (!admin.apps.length) {
 
 async function sendToTokens(
   tokens: string[],
-  payload: admin.messaging.MessagingPayload,
+  message: Omit<admin.messaging.MulticastMessage, "tokens">,
 ) {
   if (tokens.length === 0) return;
 
@@ -19,12 +19,12 @@ async function sendToTokens(
 
   await Promise.all(
     chunks.map((chunk) =>
-      messaging.sendEachForMulticast({ tokens: chunk, ...payload }),
+      messaging.sendEachForMulticast({ tokens: chunk, ...message }),
     ),
   );
 }
 
-export const notifyFieldOnTicketCreated = onDocumentCreated(
+export const notifyFieldOnTicketCreatedV2 = onDocumentCreated(
   "tickets/{ticketId}",
   async (event) => {
     const snap = event.data;
@@ -65,10 +65,20 @@ export const notifyFieldOnTicketCreated = onDocumentCreated(
       ? `Solicitante: ${ticket.requester}`
       : `Prédio: ${buildingId}`;
 
-    const payload: admin.messaging.MessagingPayload = {
+    const message: Omit<admin.messaging.MulticastMessage, "tokens"> = {
       notification: {
         title,
         body,
+      },
+      webpush: {
+        notification: {
+          title,
+          body,
+          icon: "/icon-192x192.png",
+        },
+        fcmOptions: {
+          link: "/field",
+        },
       },
       data: {
         ticketId: event.params.ticketId,
@@ -77,6 +87,6 @@ export const notifyFieldOnTicketCreated = onDocumentCreated(
       },
     };
 
-    await sendToTokens(allTokens, payload);
+    await sendToTokens(allTokens, message);
   },
 );
