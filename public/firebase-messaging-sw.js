@@ -1,27 +1,34 @@
 'use strict';
 
-importScripts('https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/12.8.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/12.8.0/firebase-messaging-compat.js');
 
-function getSenderId() {
-  const params = new URLSearchParams(self.location.search);
-  return params.get('senderId');
-}
+// Ensure activation without reloads
+self.addEventListener('install', (event) => {
+  self.skipWaiting();
+});
 
-const senderId = getSenderId();
-if (!senderId) {
-  console.warn('[fcm-sw] senderId ausente na querystring');
-} else {
-  firebase.initializeApp({ messagingSenderId: senderId });
-  const messaging = firebase.messaging();
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim());
+});
 
-  messaging.onBackgroundMessage((payload) => {
-    const { title, body } = payload.notification || {};
-    if (!title && !body) return;
+// Config público do projeto (ok expor em SW)
+firebase.initializeApp({
+  apiKey: 'AIzaSyA06MYTTaz9avNLBVCm3OgAygK9zGCnsRM',
+  authDomain: 'tasks-field-services.firebaseapp.com',
+  projectId: 'tasks-field-services',
+  messagingSenderId: '869022037892',
+  appId: '1:869022037892:web:7691f20abf38d588498fd1',
+});
 
-    self.registration.showNotification(title || 'Chamado', {
-      body: body || '',
-      data: payload.data,
-    });
+const messaging = firebase.messaging();
+
+messaging.onBackgroundMessage((payload) => {
+  const { title, body } = payload.notification || {};
+  if (!title && !body) return;
+
+  self.registration.showNotification(title || 'Chamado', {
+    body: body || '',
+    data: payload.data,
   });
-}
+});

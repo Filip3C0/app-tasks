@@ -65,5 +65,4 @@ export const db =
   typeof window !== "undefined" && app ? getFirestore(app) : null;
 export const functions =
   typeof window !== "undefined" && app ? getFunctions(app) : null;
-export const messaging =
-  typeof window !== "undefined" && app ? getMessaging(app) : null;
+export const messaging = app ? getMessaging(app) : null;
