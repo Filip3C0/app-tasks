@@ -7,7 +7,7 @@ import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 
 import { Button } from "@/components/ui/button";
-import { Home, User, LogOut, Menu, X } from "lucide-react";
+import { Home, User, LogOut, Menu, X, FilePenLine } from "lucide-react";
 
 type SidebarProps = {
   open?: boolean;
@@ -84,6 +84,14 @@ export default function Sidebar({ open, onOpenChange }: SidebarProps) {
             >
               <User size={18} />
               Perfil
+            </Link>
+            <Link
+              href="/service/editTickets"
+              className="flex items-center gap-3 px-3 py-2 rounded-lg text-indigo-300/80 hover:text-indigo-200 hover:bg-indigo-600/20 transition border border-transparent hover:border-indigo-500/40"
+              onClick={() => setMenuOpen(false)}
+            >
+              <FilePenLine size={18} />
+              Editar Chamado
             </Link>
           </nav>
         </div>
